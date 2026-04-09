@@ -42,18 +42,18 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Revolut-inspired custom colors */
+  /* Desaturated professional colors */
   --color-revolut-dark: #191c1f;
   --color-revolut-surface: #f4f4f4;
-  --color-revolut-blue: #494fdf;
-  --color-revolut-teal: #00a87e;
-  --color-revolut-danger: #e23b4a;
-  --color-revolut-warning: #ec7e00;
-  --color-revolut-pink: #e61e49;
-  --color-revolut-slate: #505a63;
-  --color-revolut-gray: #8d969e;
-  --color-revolut-border: #c9c9cd;
-  --color-idc-blue: #00838F;
+  --color-revolut-blue: #5a6ab4;
+  --color-revolut-teal: #4a9080;
+  --color-revolut-danger: #c45555;
+  --color-revolut-warning: #bf8c3a;
+  --color-revolut-pink: #b55a6a;
+  --color-revolut-slate: #5a6270;
+  --color-revolut-gray: #808890;
+  --color-revolut-border: #b8bcc2;
+  --color-idc-blue: #4a7a80;
   --color-idc-navy: #0B1220;
   --color-idc-gold: #C19A6B;
   --color-idc-light-gold: #E8D5B7;
@@ -72,17 +72,17 @@
   --secondary: #f4f4f4;
   --secondary-foreground: #000000;
   --muted: #f4f4f4;
-  --muted-foreground: #8d969e;
+  --muted-foreground: #808890;
   --accent: #f4f4f4;
   --accent-foreground: #191c1f;
-  --destructive: #e23b4a;
-  --border: #e0e0e0;
-  --input: #e0e0e0;
+  --destructive: #c45555;
+  --border: #d8d8dc;
+  --input: #d8d8dc;
   --ring: #191c1f;
-  --chart-1: #494fdf;
-  --chart-2: #00a87e;
-  --chart-3: #ec7e00;
-  --chart-4: #e61e49;
+  --chart-1: #5a6ab4;
+  --chart-2: #4a9080;
+  --chart-3: #bf8c3a;
+  --chart-4: #b55a6a;
   --chart-5: #C19A6B;
   --sidebar: #f8f8f8;
   --sidebar-foreground: #191c1f;
@@ -90,7 +90,7 @@
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #f4f4f4;
   --sidebar-accent-foreground: #191c1f;
-  --sidebar-border: #e0e0e0;
+  --sidebar-border: #d8d8dc;
   --sidebar-ring: #191c1f;
 }
 
@@ -119,11 +119,11 @@ html {
   background: #f4f4f4;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c9c9cd;
+  background: #b8bcc2;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #8d969e;
+  background: #808890;
 }
 
 /* Revolut-style pill button base */
@@ -162,11 +162,11 @@ html {
   border: 2px solid #f4f4f4;
 }
 .btn-pill-blue {
-  background: #494fdf;
+  background: #5a6ab4;
   color: #ffffff;
 }
 .btn-pill-teal {
-  background: #00a87e;
+  background: #4a9080;
   color: #ffffff;
 }
 
@@ -183,11 +183,12 @@ html {
 
 /* Card hover */
 .card-hover {
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .card-hover:hover {
   transform: translateY(-2px);
   border-color: #191c1f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 /* Stat number animation */
@@ -201,7 +202,7 @@ html {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #191c1f 0%, #505a63 100%);
+  background: linear-gradient(135deg, #191c1f 0%, #5a6270 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -209,6 +210,46 @@ html {
 
 /* Selection color */
 ::selection {
-  background: #494fdf;
+  background: #5a6ab4;
   color: #ffffff;
+}
+
+/* Lock icon pulse animation */
+@keyframes lockPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.85; }
+}
+.lock-pulse {
+  animation: lockPulse 2.5s ease-in-out infinite;
+}
+
+/* Smooth unlock transition */
+@keyframes unlockFade {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.unlock-fade-in {
+  animation: unlockFade 0.5s ease-out forwards;
+}
+
+/* Loading spinner */
+@keyframes spinLoader {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Nav item hover indent */
+.nav-item-hover {
+  transition: all 0.2s ease;
+}
+.nav-item-hover:hover {
+  padding-left: 1.25rem;
+}
+
+/* Button press effect */
+.btn-press {
+  transition: transform 0.1s ease;
+}
+.btn-press:active {
+  transform: scale(0.97);
 }

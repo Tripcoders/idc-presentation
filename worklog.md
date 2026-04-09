@@ -86,3 +86,48 @@ Stage Summary:
 - Password visible in header, "Live IDC Portal" label updated everywhere
 - Content fills container, centered with responsive padding
 - Clean lint, dev server running, page serving 200
+
+---
+Task ID: 4
+Agent: Main Agent
+Task: Desaturate colors, add investment lock, enhance UI interactions
+
+Work Log:
+- Desaturated ALL color hex codes throughout the file (11 color mappings applied globally):
+  - #494fdf → #5a6ab4 (dusty blue), #00a87e → #4a9080 (muted teal), #e23b4a → #c45555 (muted red)
+  - #ec7e00 → #bf8c3a (muted amber), #e61e49 → #b55a6a (muted rose), #505a63 → #5a6270 (dusty slate)
+  - #8d969e → #808890 (muted gray), #c9c9cd → #b8bcc2 (muted border), #00838F → #4a7a80 (muted teal)
+  - #e0e0e0 → #d8d8dc (muted border), #fafafa → #f5f5f5 (muted hover bg)
+- Changed sidebar header text from "Presentation" to "IDC Presentation"
+- Replaced DollarSign with PiggyBank icon in OverviewPanel and InvestmentPanel stat cards
+- Added PiggyBank and Loader2 to lucide-react imports
+- Implemented Investment & ROI tab password lock:
+  - "To Be Discussed" title with subtitle and hint ("Ty-Pass-Sun")
+  - Password: "Sunflower27!" stored in sessionStorage as "idc-investment-unlocked"
+  - Uses lazy useState initializer (no useEffect) to avoid lint error
+  - Pulse animation on lock icon, shake animation on wrong password
+  - Smooth fade-in transition when content unlocks (motion.div with opacity + y)
+- Added strokeWidth={2.5} to ALL lucide-react icon instances throughout the entire file
+- Enhanced hover animations:
+  - Cards: Added transition-all duration-200 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:border-[#b8bcc2] to all non-dark/non-py-0 cards
+  - Nav sidebar items: Added hover:pl-4 transition-all duration-200 for subtle indent
+  - Buttons: Added active:scale-[0.97] with appropriate transition classes
+  - Live IDC Portal sidebar link: Added hover:scale-[1.02] transition-all duration-200
+- Added loading animation:
+  - Loader2 spinner with animate-spin shown for 800ms on initial dashboard render
+  - Shown in the dashboard area (after password gate, before content)
+- Enhanced page transitions:
+  - initial: { opacity: 0, y: 12, scale: 0.98 }
+  - animate: { opacity: 1, y: 0, scale: 1 }
+  - exit: { opacity: 0, y: -8, scale: 0.99 }
+  - transition duration increased from 0.2s to 0.3s
+
+Stage Summary:
+- All 8 requested changes implemented
+- Complete color desaturation removing the AI-generated look
+- Investment tab locked behind secondary password gate (Sunflower27!)
+- All icons rendered with bolder stroke weight (2.5)
+- Improved hover micro-interactions on cards, buttons, and navigation
+- Loading spinner shown briefly on dashboard entry
+- Smooth page transitions with subtle scale effect
+- Clean lint (0 errors, 0 warnings), dev server running, page serving 200
