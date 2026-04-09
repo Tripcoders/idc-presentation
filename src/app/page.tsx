@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield, Lock, Eye, AlertTriangle, CheckCircle2, XCircle,
@@ -126,27 +126,21 @@ function Sidebar({ active, setActive, collapsed, setCollapsed }: {
 }) {
   return (
     <>
-      {/* Mobile overlay */}
+      {/* Mobile overlay — non-interactive; only drawer button toggles sidebar */}
       {!collapsed && (
-        <div className="fixed inset-0 bg-black/30 z-30 lg:hidden" onClick={() => setCollapsed(true)} />
+        <div className="fixed inset-0 bg-black/30 z-30 lg:hidden" />
       )}
 
       <aside className={`fixed top-0 left-0 z-40 h-screen bg-[#191c1f] flex flex-col transition-all duration-300 ${collapsed ? "w-[68px]" : "w-[260px]"} lg:translate-x-0 ${collapsed ? "-translate-x-full lg:translate-x-0" : "translate-x-0"}`}>
         {/* Header */}
         <div className="h-14 flex items-center justify-between px-4 border-b border-white/10">
           {!collapsed && (
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                <span className="text-white font-bold text-[11px]">IDC</span>
-              </div>
-              <div className="min-w-0">
-                <div className="text-white text-xs font-medium truncate">IDC Board</div>
-                <div className="text-[#505a63] text-[10px] truncate">Dashboard</div>
-              </div>
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="text-white text-sm font-medium truncate">Presentation</span>
             </div>
           )}
-          <button onClick={() => setCollapsed(!collapsed)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors text-[#8d969e]">
-            {collapsed ? <ChevronRight className="w-4 h-4" /> : <X className="w-4 h-4 lg:hidden" />}
+          <button onClick={() => setCollapsed(!collapsed)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors text-white/80 hover:text-white ml-auto shrink-0">
+            {collapsed ? <ChevronRight className="w-4 h-4" /> : <X className="w-4 h-4" />}
           </button>
         </div>
 
@@ -156,7 +150,7 @@ function Sidebar({ active, setActive, collapsed, setCollapsed }: {
             {navItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => { setActive(item.id); setCollapsed(true); }}
+                onClick={() => setActive(item.id)}
                 className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
                   active === item.id
                     ? "bg-white/10 text-white"
@@ -188,7 +182,7 @@ function Sidebar({ active, setActive, collapsed, setCollapsed }: {
             className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm bg-[#00a87e]/10 text-[#00a87e] hover:bg-[#00a87e]/20 transition-colors ${collapsed ? "justify-center" : ""}`}
           >
             <ExternalLink className="w-[18px] h-[18px] shrink-0" />
-            {!collapsed && <span className="font-medium">Live Dashboard</span>}
+            {!collapsed && <span className="font-medium">Live IDC Portal</span>}
           </a>
         </div>
       </aside>
@@ -210,9 +204,13 @@ function Header({ activeLabel, onMenuClick }: { activeLabel: string; onMenuClick
         <Badge variant="secondary" className="text-[10px] hidden sm:inline-flex">April 2026</Badge>
       </div>
       <div className="flex items-center gap-2">
+        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#f4f4f4]">
+          <Lock className="w-3 h-3 text-[#8d969e]" />
+          <span className="text-[10px] font-mono text-[#8d969e]">IDC2026!</span>
+        </div>
         <a href={DASHBOARD_URL} target="_blank" rel="noopener noreferrer" className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-[#00a87e] hover:underline">
           <ExternalLink className="w-3 h-3" />
-          Live App
+          Live IDC Portal
         </a>
         <div className="w-8 h-8 rounded-full bg-[#f4f4f4] flex items-center justify-center">
           <Users className="w-3.5 h-3.5 text-[#8d969e]" />
@@ -230,7 +228,7 @@ function StatCard({ label, value, sub, icon, trend, color = "#191c1f" }: {
   icon: React.ReactNode; trend?: { value: string; up: boolean }; color?: string;
 }) {
   return (
-    <Card className="py-5">
+    <Card>
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-3">
           <span className="text-xs text-[#8d969e] font-medium">{label}</span>
@@ -444,7 +442,7 @@ function SecurityPanel() {
       </Card>
 
       <Tabs defaultValue="vulnerabilities">
-        <TabsList className="bg-[#f4f4f4]">
+        <TabsList className="bg-[#f4f4f4] w-full overflow-x-auto">
           <TabsTrigger value="vulnerabilities">Vulnerabilities</TabsTrigger>
           <TabsTrigger value="ports">Port Analysis</TabsTrigger>
           <TabsTrigger value="positive">Positive Controls</TabsTrigger>
@@ -886,7 +884,7 @@ function UXFlowPanel() {
 
       {/* User flows */}
       <Tabs defaultValue="registration">
-        <TabsList className="bg-[#f4f4f4]">
+        <TabsList className="bg-[#f4f4f4] w-full overflow-x-auto">
           <TabsTrigger value="registration">Registration (8 Steps)</TabsTrigger>
           <TabsTrigger value="funding">Funding Application (7 Steps)</TabsTrigger>
           <TabsTrigger value="navigation">Navigation Structure</TabsTrigger>
@@ -1113,20 +1111,33 @@ export default function IDCPage() {
 
   const [isUnlocked, setIsUnlocked] = useState(getInitialLocked);
   const [active, setActive] = useState<PanelKey>("overview");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileView, setMobileView] = useState(true);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobile = window.innerWidth < 1024;
+      setMobileView(isMobile);
+      if (isMobile) setSidebarCollapsed(true);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   if (!isUnlocked) {
     return <PasswordGate onUnlock={() => setIsUnlocked(true)} />;
   }
 
   const activeLabel = panelConfig[active].label;
+  const effectiveCollapsed = mobileView ? true : sidebarCollapsed;
 
   return (
     <div className="min-h-screen bg-[#f8f8f8]">
-      <Sidebar active={active} setActive={setActive} collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
-      <div className={`transition-all duration-300 ${sidebarCollapsed ? "lg:ml-[68px]" : "lg:ml-[260px]"}`}>
+      <Sidebar active={active} setActive={setActive} collapsed={effectiveCollapsed} setCollapsed={setSidebarCollapsed} />
+      <div className={`transition-all duration-300 flex flex-col min-h-screen ${effectiveCollapsed ? "lg:ml-[68px]" : "lg:ml-[260px]"}`}>
         <Header activeLabel={activeLabel} onMenuClick={() => setSidebarCollapsed(false)} />
-        <main className="p-4 md:p-6 max-w-[1400px]">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 mx-auto w-full max-w-[1600px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={active}
@@ -1144,6 +1155,12 @@ export default function IDCPage() {
             </motion.div>
           </AnimatePresence>
         </main>
+        <footer className="mt-auto border-t border-[#e0e0e0] bg-white px-4 md:px-6 py-3">
+          <div className="flex items-center justify-between text-[10px] text-[#8d969e]">
+            <span>Confidential — IDC Board Members Only</span>
+            <span>HexStrike AI Cybersecurity · April 2026</span>
+          </div>
+        </footer>
       </div>
     </div>
   );

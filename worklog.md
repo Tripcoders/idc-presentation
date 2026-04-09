@@ -57,3 +57,32 @@ Stage Summary:
 - Password gate with IDC2026! preserved
 - Live Dashboard link to https://my-app-iota-ruby-95.vercel.app/ in sidebar and overview
 - Clean lint, successful compilation, server running
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: UI/UX refinements per user feedback
+
+Work Log:
+- Sidebar: Removed "IDC", "IDC Board", "Dashboard" labels — replaced with just "Presentation" as the sidebar name
+- Sidebar: Changed close/toggle icon to light color (text-white/80) for visibility on dark #191c1f background
+- Sidebar: Toggle button now always visible (removed lg:hidden from X icon)
+- Sidebar: Made overlay non-interactive — sidebar only opens/closes via the drawer button (best UX practice)
+- Sidebar: Nav item click no longer auto-collapses sidebar on desktop
+- Font: Switched from Inter to Plus Jakarta Sans across entire project (layout.tsx + globals.css)
+- Header: Changed "Live App" to "Live IDC Portal" in header link
+- Header: Added password display badge (lock icon + "IDC2026!") shown in header for easy access
+- Cards: Fixed StatCard double-padding issue (removed py-5 from Card, kept p-5 on CardContent)
+- Layout: Content area now uses flex-1 with max-w-[1600px] mx-auto for balanced centering
+- Layout: Added sticky footer with confidentiality notice
+- Layout: Added useEffect-based responsive detection — sidebar auto-collapses on mobile (<1024px), expands on desktop
+- Responsive: Added w-full overflow-x-auto to TabsList components for mobile tab scrolling
+- All existing responsive breakpoints verified correct by frontend-styling-expert subagent
+
+Stage Summary:
+- All 8 user-requested changes implemented
+- Font switched to Plus Jakarta Sans (Plus_Jakarta_Sans from next/font/google)
+- Sidebar UX improved: button-only toggle, light icons on dark surface, "Presentation" branding
+- Password visible in header, "Live IDC Portal" label updated everywhere
+- Content fills container, centered with responsive padding
+- Clean lint, dev server running, page serving 200
