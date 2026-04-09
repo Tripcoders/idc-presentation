@@ -268,12 +268,12 @@ function OverviewPanel({ onNavigate }: { onNavigate: (id: PanelKey) => void }) {
       {/* Summary cards row */}
       <div className="grid md:grid-cols-2 gap-4">
         {/* Current vs Target */}
-        <Card className="py-0">
-          <CardHeader className="pb-4">
+        <Card className="gap-4">
+          <CardHeader>
             <CardTitle className="text-sm">Current State vs. Target State</CardTitle>
             <CardDescription>Platform transformation at a glance</CardDescription>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent>
             <div className="space-y-3">
               {[
                 { label: "Platform", before: "WordPress 6.5+ LAMP", after: "Strapi + Next.js + PostgreSQL" },
@@ -295,8 +295,8 @@ function OverviewPanel({ onNavigate }: { onNavigate: (id: PanelKey) => void }) {
         </Card>
 
         {/* Key Risk Items */}
-        <Card className="py-0">
-          <CardHeader className="pb-4">
+        <Card className="gap-4">
+          <CardHeader>
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-sm">Critical Risk Items</CardTitle>
@@ -305,7 +305,7 @@ function OverviewPanel({ onNavigate }: { onNavigate: (id: PanelKey) => void }) {
               <button onClick={() => onNavigate("security")} className="text-xs text-[#494fdf] font-medium hover:underline">View all →</button>
             </div>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent>
             <div className="space-y-3">
               {[
                 { title: "MySQL Exposed to Internet", severity: "High", color: "#e23b4a", timeline: "7 days" },
@@ -329,8 +329,8 @@ function OverviewPanel({ onNavigate }: { onNavigate: (id: PanelKey) => void }) {
       {/* Project progress + ROI */}
       <div className="grid md:grid-cols-3 gap-4">
         {/* Project timeline */}
-        <Card className="py-0 md:col-span-2">
-          <CardHeader className="pb-4">
+        <Card className="gap-4 md:col-span-2">
+          <CardHeader>
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-sm">Project Timeline</CardTitle>
@@ -339,7 +339,7 @@ function OverviewPanel({ onNavigate }: { onNavigate: (id: PanelKey) => void }) {
               <button onClick={() => onNavigate("project-plan")} className="text-xs text-[#494fdf] font-medium hover:underline">Details →</button>
             </div>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent>
             <div className="space-y-3">
               {[
                 { name: "Foundation & Security", weeks: "Wk 1-4", progress: 0, color: "#e23b4a" },
@@ -364,12 +364,12 @@ function OverviewPanel({ onNavigate }: { onNavigate: (id: PanelKey) => void }) {
         </Card>
 
         {/* Quick ROI */}
-        <Card className="py-0">
-          <CardHeader className="pb-4">
+        <Card className="gap-4">
+          <CardHeader>
             <CardTitle className="text-sm">ROI Highlights</CardTitle>
             <CardDescription>Return on investment</CardDescription>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent>
             <div className="space-y-4">
               {[
                 { label: "Security Risk", value: "-80%", color: "#00a87e" },
@@ -390,7 +390,7 @@ function OverviewPanel({ onNavigate }: { onNavigate: (id: PanelKey) => void }) {
       </div>
 
       {/* Live dashboard CTA */}
-      <Card className="bg-[#191c1f] border-[#191c1f]">
+      <Card className="bg-[#191c1f] border-[#191c1f] py-0">
         <CardContent className="p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -451,7 +451,7 @@ function SecurityPanel() {
 
         <TabsContent value="vulnerabilities">
           <Card className="py-0 mt-4">
-            <CardContent className="p-0">
+            <CardContent className="px-0 pt-4 pb-1">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
@@ -501,7 +501,7 @@ function SecurityPanel() {
               { port: "3306", service: "MySQL", version: "10.3.38", risk: "High", color: "#e23b4a" },
             ].map((item, i) => (
               <Card key={i} className="py-0">
-                <CardContent className="p-4">
+                <CardContent className="p-5">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <Server className="w-3.5 h-3.5 text-[#8d969e]" />
@@ -523,12 +523,12 @@ function SecurityPanel() {
         </TabsContent>
 
         <TabsContent value="positive">
-          <Card className="py-0 mt-4">
-            <CardHeader className="pb-3">
+          <Card className="gap-4 mt-4">
+            <CardHeader>
               <CardTitle className="text-sm">Positive Security Controls</CardTitle>
               <CardDescription>Existing controls performing well</CardDescription>
             </CardHeader>
-            <CardContent className="pt-0">
+            <CardContent>
               <div className="grid sm:grid-cols-2 gap-3">
                 {[
                   { label: "Strong Security Headers", desc: "Properly configured with modern standards" },
@@ -553,17 +553,17 @@ function SecurityPanel() {
 
         <TabsContent value="visuals">
           <div className="grid md:grid-cols-2 gap-4 mt-4">
-            <Card className="py-0">
+            <Card className="gap-4">
               <CardHeader className="pb-2"><CardTitle className="text-sm">Security Radar</CardTitle></CardHeader>
-              <CardContent className="pt-0">
+              <CardContent>
                 <div className="relative aspect-square max-w-xs mx-auto">
                   <Image src="/idc_security_radar.png" alt="Security Radar" fill className="object-contain" />
                 </div>
               </CardContent>
             </Card>
-            <Card className="py-0">
+            <Card className="gap-4">
               <CardHeader className="pb-2"><CardTitle className="text-sm">Risk Matrix</CardTitle></CardHeader>
-              <CardContent className="pt-0">
+              <CardContent>
                 <div className="relative aspect-square max-w-xs mx-auto">
                   <Image src="/idc_risk_matrix.png" alt="Risk Matrix" fill className="object-contain" />
                 </div>
@@ -574,12 +574,12 @@ function SecurityPanel() {
       </Tabs>
 
       {/* Remediation Roadmap */}
-      <Card className="py-0">
-        <CardHeader className="pb-3">
+      <Card className="gap-4">
+        <CardHeader>
           <CardTitle className="text-sm">Remediation Roadmap</CardTitle>
           <CardDescription>Phased approach to security improvements</CardDescription>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent>
           <Accordion type="single" collapsible className="w-full">
             {[
               { phase: "Phase 1: Critical Fixes", days: "Days 1-7", color: "#e23b4a", items: ["Move MySQL port 3306 behind firewall", "Implement IP whitelisting for database access", "Restrict WordPress REST API author information", "Review and tighten file permissions"] },
@@ -621,12 +621,12 @@ function ModernizationPanel() {
   return (
     <div className="space-y-6">
       {/* Architecture grid */}
-      <Card className="py-0">
-        <CardHeader className="pb-3">
+      <Card className="gap-4">
+        <CardHeader>
           <CardTitle className="text-sm">Proposed Architecture</CardTitle>
           <CardDescription>Headless CMS + Microservices + Container Orchestration</CardDescription>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {[
               { icon: <Globe className="w-5 h-5" />, name: "Next.js", desc: "SSR/SSG Frontend", color: "#494fdf" },
@@ -653,12 +653,12 @@ function ModernizationPanel() {
       </Card>
 
       {/* Technology rationale - Accordion */}
-      <Card className="py-0">
-        <CardHeader className="pb-3">
+      <Card className="gap-4">
+        <CardHeader>
           <CardTitle className="text-sm">Technology Selection Rationale</CardTitle>
           <CardDescription>Why each technology was chosen</CardDescription>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent>
           <Accordion type="single" collapsible defaultValue="tech-0">
             {[
               { title: "Why Headless CMS (Strapi)?", color: "#494fdf", points: ["API-first design eliminates admin interface exposure", "Fine-grained role-based access control (RBAC)", "Self-hosted for data sovereignty compliance", "No plugin vulnerability inheritance from WordPress", "Built-in GraphQL and REST APIs with rate limiting"] },
@@ -691,12 +691,12 @@ function ModernizationPanel() {
       </Card>
 
       {/* Performance comparison */}
-      <Card className="py-0">
-        <CardHeader className="pb-3">
+      <Card className="gap-4">
+        <CardHeader>
           <CardTitle className="text-sm">Performance Comparison</CardTitle>
           <CardDescription>Before vs. after modernization</CardDescription>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { metric: "Page Load", before: "2-3s", after: "<500ms", improvement: "4x faster" },
@@ -726,17 +726,17 @@ function ModernizationPanel() {
 
       {/* Images */}
       <div className="grid md:grid-cols-2 gap-4">
-        <Card className="py-0">
+        <Card className="gap-4">
           <CardHeader className="pb-2"><CardTitle className="text-sm">Project Scope</CardTitle></CardHeader>
-          <CardContent className="pt-0">
+          <CardContent>
             <div className="relative aspect-[4/3]">
               <Image src="/idc_scope_breakdown.png" alt="Scope" fill className="object-contain" />
             </div>
           </CardContent>
         </Card>
-        <Card className="py-0">
+        <Card className="gap-4">
           <CardHeader className="pb-2"><CardTitle className="text-sm">Sector Coverage</CardTitle></CardHeader>
-          <CardContent className="pt-0">
+          <CardContent>
             <div className="relative aspect-[4/3]">
               <Image src="/idc_sectors.png" alt="Sectors" fill className="object-contain" />
             </div>
@@ -788,12 +788,12 @@ function ProjectPlanPanel() {
       </div>
 
       {/* Milestones */}
-      <Card className="py-0">
-        <CardHeader className="pb-3">
+      <Card className="gap-4">
+        <CardHeader>
           <CardTitle className="text-sm">Critical Milestones</CardTitle>
           <CardDescription>Key delivery checkpoints</CardDescription>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {[
               { name: "DMARC Upgrade", week: "Wk 1" },
@@ -817,12 +817,12 @@ function ProjectPlanPanel() {
       </Card>
 
       {/* Cost breakdown */}
-      <Card className="py-0">
-        <CardHeader className="pb-3">
+      <Card className="gap-4">
+        <CardHeader>
           <CardTitle className="text-sm">Development Cost Breakdown</CardTitle>
           <CardDescription>Total: R 1,580,900</CardDescription>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent>
           <div className="grid sm:grid-cols-2 gap-x-8 gap-y-2">
             {[
               { label: "DMARC & Email Security", amount: "R 72,000" },
@@ -855,12 +855,12 @@ function UXFlowPanel() {
   return (
     <div className="space-y-6">
       {/* Design principles */}
-      <Card className="py-0">
-        <CardHeader className="pb-3">
+      <Card className="gap-4">
+        <CardHeader>
           <CardTitle className="text-sm">Design Principles</CardTitle>
           <CardDescription>Guiding principles for the new portal</CardDescription>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
               { icon: <ShieldCheck className="w-4 h-4" />, title: "Trust & Authority", desc: "Clean typography, institutional gravitas" },
@@ -996,12 +996,12 @@ function InvestmentPanel() {
 
       <div className="grid md:grid-cols-2 gap-4">
         {/* Cost breakdown */}
-        <Card className="py-0">
-          <CardHeader className="pb-3">
+        <Card className="gap-4">
+          <CardHeader>
             <CardTitle className="text-sm">Development Cost Breakdown</CardTitle>
             <CardDescription>Total: R 1,580,900</CardDescription>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent>
             <div className="space-y-2">
               {[
                 { label: "DMARC & Email Security", amount: "R 72,000", pct: 5 },
@@ -1030,12 +1030,12 @@ function InvestmentPanel() {
         </Card>
 
         {/* Ongoing costs */}
-        <Card className="py-0">
-          <CardHeader className="pb-3">
+        <Card className="gap-4">
+          <CardHeader>
             <CardTitle className="text-sm">Ongoing Annual Costs</CardTitle>
             <CardDescription>Total: R 774,000/year</CardDescription>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent>
             <div className="space-y-2">
               {[
                 { label: "Security Maintenance", amount: "R 216,000/yr" },
