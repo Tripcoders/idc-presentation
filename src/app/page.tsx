@@ -1,23 +1,36 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield, Lock, Eye, AlertTriangle, CheckCircle2, XCircle,
-  ArrowRight, ChevronDown, ChevronRight, ExternalLink,
-  Server, Globe, Database, Cpu, Cloud, Zap, Users, Target,
-  TrendingUp, Calendar, Clock, DollarSign, BarChart3,
-  Layers, FileCheck, Code, Palette, Smartphone,
-  Menu, X, Mail, Phone, Building2, ShieldCheck,
-  ArrowUpRight, Briefcase, Scale, Settings, FileText
+  ExternalLink, Server, Globe, Database, Cpu, Cloud, Zap,
+  Users, Target, TrendingUp, DollarSign, BarChart3, Layers,
+  Code, Palette, Smartphone, Menu, X, ShieldCheck,
+  ArrowUpRight, Briefcase, Scale, Settings, FileText,
+  Activity, Clock, CalendarDays, ChevronRight,
+  LayoutDashboard, Bug, Network, HardDrive, MonitorSmartphone,
+  FileSearch, ShieldAlert, TriangleAlert, CircleDot,
+  FolderKanban, Receipt, ArrowDownRight, Info, Link2
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Accordion, AccordionContent, AccordionItem, AccordionTrigger
+} from "@/components/ui/accordion";
 import Image from "next/image";
 
 /* ============================================================
-   PASSWORD GATE COMPONENT
+   CONSTANTS
+   ============================================================ */
+const DASHBOARD_URL = "https://my-app-iota-ruby-95.vercel.app/";
+
+/* ============================================================
+   PASSWORD GATE
    ============================================================ */
 function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
   const [password, setPassword] = useState("");
@@ -38,1248 +51,1100 @@ function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
 
   return (
     <div className="min-h-screen bg-[#191c1f] flex items-center justify-center px-4">
-      <div className="text-center max-w-md w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 mb-6">
-              <Shield className="w-8 h-8 text-white" />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-center max-w-md w-full"
+      >
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 mb-6">
+          <Shield className="w-7 h-7 text-white" />
+        </div>
+        <h1 className="text-2xl md:text-3xl font-medium text-white tracking-tight mb-2">
+          IDC Board Dashboard
+        </h1>
+        <p className="text-[#8d969e] text-sm mb-8">
+          Digital Transformation & Infrastructure Modernization
+        </p>
+        <form onSubmit={handleSubmit}>
+          <motion.div animate={shake ? { x: [0, -10, 10, -10, 10, 0] } : {}} transition={{ duration: 0.4 }}>
+            <div className="relative mb-4">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8d969e]" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setError(false); }}
+                placeholder="Enter access code"
+                className="w-full pl-11 pr-5 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-[#8d969e] text-center text-base tracking-widest focus:outline-none focus:border-white/30 transition-colors"
+                autoFocus
+              />
             </div>
-            <h1 className="text-3xl md:text-4xl font-medium text-white tracking-tight mb-3">
-              IDC Board Presentation
-            </h1>
-            <p className="text-[#8d969e] text-base leading-relaxed">
-              Digital Transformation & Infrastructure Modernization<br />
-              Industrial Development Corporation of South Africa
-            </p>
-          </div>
+          </motion.div>
+          {error && (
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[#e23b4a] text-xs mb-4">
+              Invalid access code. Please try again.
+            </motion.p>
+          )}
+          <button type="submit" className="w-full py-3 bg-white text-[#191c1f] font-medium text-sm rounded-full hover:opacity-90 transition-opacity">
+            Unlock Dashboard
+          </button>
+        </form>
+        <p className="text-[#505a63] text-[11px] mt-8">
+          Confidential — For IDC Board Members Only<br />
+          HexStrike AI Cybersecurity · April 2026
+        </p>
+      </motion.div>
+    </div>
+  );
+}
 
-          <form onSubmit={handleSubmit}>
-            <motion.div
-              animate={shake ? { x: [0, -10, 10, -10, 10, 0] } : {}}
-              transition={{ duration: 0.4 }}
-            >
-              <div className="relative mb-4">
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(false); }}
-                  placeholder="Enter access code"
-                  className="w-full px-5 py-4 bg-white/5 border-2 border-white/10 rounded-2xl text-white placeholder:text-[#8d969e] text-center text-lg tracking-widest focus:outline-none focus:border-white/30 transition-colors"
-                  autoFocus
-                />
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8d969e]" />
+/* ============================================================
+   SIDEBAR NAVIGATION
+   ============================================================ */
+type PanelKey = "overview" | "security" | "modernization" | "project-plan" | "ux-flow" | "investment";
+
+interface NavItem {
+  id: PanelKey;
+  label: string;
+  icon: React.ReactNode;
+  badge?: string;
+  badgeColor?: string;
+}
+
+const navItems: NavItem[] = [
+  { id: "overview", label: "Overview", icon: <LayoutDashboard className="w-[18px] h-[18px]" /> },
+  { id: "security", label: "Security Assessment", icon: <ShieldAlert className="w-[18px] h-[18px]" />, badge: "6 risks", badgeColor: "#ec7e00" },
+  { id: "modernization", label: "Modernization Plan", icon: <Network className="w-[18px] h-[18px]" /> },
+  { id: "project-plan", label: "Project Plan", icon: <FolderKanban className="w-[18px] h-[18px]" />, badge: "28 wks", badgeColor: "#494fdf" },
+  { id: "ux-flow", label: "New Portal UX", icon: <MonitorSmartphone className="w-[18px] h-[18px]" /> },
+  { id: "investment", label: "Investment & ROI", icon: <Receipt className="w-[18px] h-[18px]" />, badge: "320% ROI", badgeColor: "#00a87e" },
+];
+
+function Sidebar({ active, setActive, collapsed, setCollapsed }: {
+  active: PanelKey; setActive: (id: PanelKey) => void;
+  collapsed: boolean; setCollapsed: (v: boolean) => void;
+}) {
+  return (
+    <>
+      {/* Mobile overlay */}
+      {!collapsed && (
+        <div className="fixed inset-0 bg-black/30 z-30 lg:hidden" onClick={() => setCollapsed(true)} />
+      )}
+
+      <aside className={`fixed top-0 left-0 z-40 h-screen bg-[#191c1f] flex flex-col transition-all duration-300 ${collapsed ? "w-[68px]" : "w-[260px]"} lg:translate-x-0 ${collapsed ? "-translate-x-full lg:translate-x-0" : "translate-x-0"}`}>
+        {/* Header */}
+        <div className="h-14 flex items-center justify-between px-4 border-b border-white/10">
+          {!collapsed && (
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                <span className="text-white font-bold text-[11px]">IDC</span>
               </div>
-            </motion.div>
+              <div className="min-w-0">
+                <div className="text-white text-xs font-medium truncate">IDC Board</div>
+                <div className="text-[#505a63] text-[10px] truncate">Dashboard</div>
+              </div>
+            </div>
+          )}
+          <button onClick={() => setCollapsed(!collapsed)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors text-[#8d969e]">
+            {collapsed ? <ChevronRight className="w-4 h-4" /> : <X className="w-4 h-4 lg:hidden" />}
+          </button>
+        </div>
 
-            {error && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-[#e23b4a] text-sm mb-4"
+        {/* Nav items */}
+        <ScrollArea className="flex-1 py-3 px-3">
+          <div className="space-y-1">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => { setActive(item.id); setCollapsed(true); }}
+                className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
+                  active === item.id
+                    ? "bg-white/10 text-white"
+                    : "text-[#8d969e] hover:bg-white/5 hover:text-white"
+                }`}
               >
-                Invalid access code. Please try again.
-              </motion.p>
-            )}
+                <span className="shrink-0">{item.icon}</span>
+                {!collapsed && (
+                  <>
+                    <span className="flex-1 text-left truncate">{item.label}</span>
+                    {item.badge && (
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md" style={{ backgroundColor: (item.badgeColor || "#494fdf") + "20", color: item.badgeColor }}>
+                        {item.badge}
+                      </span>
+                    )}
+                  </>
+                )}
+              </button>
+            ))}
+          </div>
+        </ScrollArea>
 
-            <button
-              type="submit"
-              className="w-full py-4 bg-white text-[#191c1f] font-medium text-base rounded-full hover:opacity-90 transition-opacity"
-            >
-              Unlock Presentation
-            </button>
-          </form>
+        {/* Live dashboard link */}
+        <div className="p-3 border-t border-white/10">
+          <a
+            href={DASHBOARD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm bg-[#00a87e]/10 text-[#00a87e] hover:bg-[#00a87e]/20 transition-colors ${collapsed ? "justify-center" : ""}`}
+          >
+            <ExternalLink className="w-[18px] h-[18px] shrink-0" />
+            {!collapsed && <span className="font-medium">Live Dashboard</span>}
+          </a>
+        </div>
+      </aside>
+    </>
+  );
+}
 
-          <p className="text-[#505a63] text-xs mt-8">
-            Confidential — For IDC Board Members Only<br />
-            Prepared by HexStrike AI Cybersecurity · April 2026
-          </p>
-        </motion.div>
+/* ============================================================
+   HEADER
+   ============================================================ */
+function Header({ activeLabel, onMenuClick }: { activeLabel: string; onMenuClick: () => void }) {
+  return (
+    <header className="sticky top-0 z-20 h-14 bg-white border-b border-[#e0e0e0] flex items-center justify-between px-4 md:px-6">
+      <div className="flex items-center gap-3">
+        <button onClick={onMenuClick} className="lg:hidden w-8 h-8 rounded-lg hover:bg-[#f4f4f4] flex items-center justify-center">
+          <Menu className="w-4 h-4" />
+        </button>
+        <h1 className="text-sm font-medium text-[#191c1f]">{activeLabel}</h1>
+        <Badge variant="secondary" className="text-[10px] hidden sm:inline-flex">April 2026</Badge>
+      </div>
+      <div className="flex items-center gap-2">
+        <a href={DASHBOARD_URL} target="_blank" rel="noopener noreferrer" className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-[#00a87e] hover:underline">
+          <ExternalLink className="w-3 h-3" />
+          Live App
+        </a>
+        <div className="w-8 h-8 rounded-full bg-[#f4f4f4] flex items-center justify-center">
+          <Users className="w-3.5 h-3.5 text-[#8d969e]" />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+/* ============================================================
+   STAT CARD COMPONENT
+   ============================================================ */
+function StatCard({ label, value, sub, icon, trend, color = "#191c1f" }: {
+  label: string; value: string; sub?: string;
+  icon: React.ReactNode; trend?: { value: string; up: boolean }; color?: string;
+}) {
+  return (
+    <Card className="py-5">
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between mb-3">
+          <span className="text-xs text-[#8d969e] font-medium">{label}</span>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: color + "10", color }}>
+            {icon}
+          </div>
+        </div>
+        <div className="text-2xl font-semibold tracking-tight" style={{ color }}>{value}</div>
+        <div className="flex items-center gap-2 mt-1">
+          {trend && (
+            <span className={`flex items-center gap-0.5 text-[11px] font-medium ${trend.up ? "text-[#00a87e]" : "text-[#e23b4a]"}`}>
+              {trend.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+              {trend.value}
+            </span>
+          )}
+          {sub && <span className="text-[11px] text-[#8d969e]">{sub}</span>}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ============================================================
+   OVERVIEW PANEL
+   ============================================================ */
+function OverviewPanel({ onNavigate }: { onNavigate: (id: PanelKey) => void }) {
+  return (
+    <div className="space-y-6">
+      {/* KPI row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Security Score" value="7.2/10" sub="Current — Medium Risk" icon={<Shield className="w-4 h-4" />} color="#ec7e00" />
+        <StatCard label="Target Score" value="9.5/10" sub="Post-modernization" icon={<ShieldCheck className="w-4 h-4" />} color="#00a87e" trend={{ value: "+32%", up: true }} />
+        <StatCard label="5-Year ROI" value="320%" sub="18-month payback" icon={<TrendingUp className="w-4 h-4" />} color="#494fdf" />
+        <StatCard label="Total Investment" value="R 1.58M" sub="Development costs" icon={<DollarSign className="w-4 h-4" />} color="#191c1f" />
+      </div>
+
+      {/* Summary cards row */}
+      <div className="grid md:grid-cols-2 gap-4">
+        {/* Current vs Target */}
+        <Card className="py-0">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-sm">Current State vs. Target State</CardTitle>
+            <CardDescription>Platform transformation at a glance</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-3">
+              {[
+                { label: "Platform", before: "WordPress 6.5+ LAMP", after: "Strapi + Next.js + PostgreSQL" },
+                { label: "Security", before: "7.2/10 (Medium)", after: "9.5/10 (High)" },
+                { label: "Page Load", before: "2-3 seconds", after: "<500ms" },
+                { label: "DB Queries", before: "50+ / page", after: "2-3 / page" },
+                { label: "Scalability", before: "Vertical only", after: "K8s auto-scale" },
+                { label: "DMARC", before: "Quarantine, no subs", after: "Reject, all domains" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 text-xs">
+                  <span className="w-20 text-[#8d969e] shrink-0">{item.label}</span>
+                  <span className="flex-1 text-[#e23b4a] truncate">{item.before}</span>
+                  <ChevronRight className="w-3 h-3 text-[#c9c9cd] shrink-0" />
+                  <span className="flex-1 text-[#00a87e] truncate font-medium">{item.after}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Key Risk Items */}
+        <Card className="py-0">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-sm">Critical Risk Items</CardTitle>
+                <CardDescription>Requiring immediate attention</CardDescription>
+              </div>
+              <button onClick={() => onNavigate("security")} className="text-xs text-[#494fdf] font-medium hover:underline">View all →</button>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-3">
+              {[
+                { title: "MySQL Exposed to Internet", severity: "High", color: "#e23b4a", timeline: "7 days" },
+                { title: "WordPress Author Disclosure", severity: "Medium", color: "#ec7e00", timeline: "14 days" },
+                { title: "Outdated nginx (1.20.1)", severity: "Medium", color: "#ec7e00", timeline: "30 days" },
+                { title: "DMARC Subdomain Gap", severity: "Medium", color: "#ec7e00", timeline: "14 days" },
+                { title: "Outdated OpenSSH (7.4)", severity: "Medium", color: "#ec7e00", timeline: "30 days" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 text-xs">
+                  <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+                  <span className="flex-1 text-[#191c1f] truncate">{item.title}</span>
+                  <Badge className="text-[10px] border-0 px-1.5 py-0" style={{ backgroundColor: item.color + "15", color: item.color }}>{item.severity}</Badge>
+                  <span className="text-[#8d969e] w-14 text-right">{item.timeline}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Project progress + ROI */}
+      <div className="grid md:grid-cols-3 gap-4">
+        {/* Project timeline */}
+        <Card className="py-0 md:col-span-2">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-sm">Project Timeline</CardTitle>
+                <CardDescription>6 phases across 28 weeks</CardDescription>
+              </div>
+              <button onClick={() => onNavigate("project-plan")} className="text-xs text-[#494fdf] font-medium hover:underline">Details →</button>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-3">
+              {[
+                { name: "Foundation & Security", weeks: "Wk 1-4", progress: 0, color: "#e23b4a" },
+                { name: "Backend Development", weeks: "Wk 5-10", progress: 0, color: "#ec7e00" },
+                { name: "Frontend Development", weeks: "Wk 11-18", progress: 0, color: "#494fdf" },
+                { name: "Testing & Migration", weeks: "Wk 19-22", progress: 0, color: "#00a87e" },
+                { name: "Go-Live & Handover", weeks: "Wk 23-28", progress: 0, color: "#191c1f" },
+              ].map((phase, i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: phase.color }} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-medium text-[#191c1f]">{phase.name}</span>
+                      <span className="text-[10px] text-[#8d969e]">{phase.weeks}</span>
+                    </div>
+                    <Progress value={phase.progress} className="h-1.5" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick ROI */}
+        <Card className="py-0">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-sm">ROI Highlights</CardTitle>
+            <CardDescription>Return on investment</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-4">
+              {[
+                { label: "Security Risk", value: "-80%", color: "#00a87e" },
+                { label: "Page Speed", value: "4x faster", color: "#00a87e" },
+                { label: "Dev Efficiency", value: "+60%", color: "#00a87e" },
+                { label: "Op. Costs", value: "-25%", color: "#00a87e" },
+                { label: "Payback", value: "18 months", color: "#494fdf" },
+                { label: "5-Year ROI", value: "320%", color: "#494fdf" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <span className="text-xs text-[#8d969e]">{item.label}</span>
+                  <span className="text-xs font-semibold" style={{ color: item.color }}>{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Live dashboard CTA */}
+      <Card className="bg-[#191c1f] border-[#191c1f]">
+        <CardContent className="p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-sm font-medium text-white mb-1">New IDC Application Portal — Live Preview</h3>
+              <p className="text-xs text-[#8d969e]">Experience the modernized application process with the live working prototype.</p>
+            </div>
+            <a href={DASHBOARD_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00a87e] text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity shrink-0">
+              Open Live Dashboard
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+/* ============================================================
+   SECURITY ASSESSMENT PANEL
+   ============================================================ */
+function SecurityPanel() {
+  return (
+    <div className="space-y-6">
+      {/* Score banner */}
+      <Card className="bg-[#191c1f] border-[#191c1f] py-0">
+        <CardContent className="p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <p className="text-[#8d969e] text-xs font-medium mb-1">Overall Security Rating</p>
+              <div className="flex items-center gap-3">
+                <span className="text-3xl font-semibold text-white">7.2<span className="text-lg text-[#8d969e]">/10</span></span>
+                <Badge className="bg-[#ec7e00] text-white border-0 text-[10px]">AMBER — Medium Risk</Badge>
+              </div>
+            </div>
+            <div className="flex gap-6">
+              {[
+                { value: "9", label: "Open Ports" },
+                { value: "6", label: "Risk Items" },
+                { value: "0", label: "Critical CVEs" },
+              ].map((s, i) => (
+                <div key={i} className="text-center">
+                  <div className="text-xl font-semibold text-white">{s.value}</div>
+                  <div className="text-[10px] text-[#8d969e]">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="vulnerabilities">
+        <TabsList className="bg-[#f4f4f4]">
+          <TabsTrigger value="vulnerabilities">Vulnerabilities</TabsTrigger>
+          <TabsTrigger value="ports">Port Analysis</TabsTrigger>
+          <TabsTrigger value="positive">Positive Controls</TabsTrigger>
+          <TabsTrigger value="visuals">Visual Reports</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="vulnerabilities">
+          <Card className="py-0 mt-4">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-[#e0e0e0]">
+                      <th className="text-left py-3 px-4 text-[11px] font-medium text-[#8d969e] uppercase tracking-wider">Vulnerability</th>
+                      <th className="text-left py-3 px-4 text-[11px] font-medium text-[#8d969e] uppercase tracking-wider">Severity</th>
+                      <th className="text-left py-3 px-4 text-[11px] font-medium text-[#8d969e] uppercase tracking-wider hidden md:table-cell">Impact</th>
+                      <th className="text-left py-3 px-4 text-[11px] font-medium text-[#8d969e] uppercase tracking-wider">Timeline</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { vuln: "MySQL Database Exposed to Internet", severity: "High", color: "#e23b4a", impact: "Data breach, regulatory fines", timeline: "7 days" },
+                      { vuln: "WordPress Author Info Disclosure", severity: "Medium", color: "#ec7e00", impact: "Phishing, social engineering", timeline: "14 days" },
+                      { vuln: "Outdated nginx (1.20.1)", severity: "Medium", color: "#ec7e00", impact: "Known CVE exploitation", timeline: "30 days" },
+                      { vuln: "DMARC Subdomain Gap", severity: "Medium", color: "#ec7e00", impact: "Email spoofing risk", timeline: "14 days" },
+                      { vuln: "Outdated OpenSSH (7.4)", severity: "Medium", color: "#ec7e00", impact: "Known vulnerabilities", timeline: "30 days" },
+                      { vuln: "FTP Service Exposure", severity: "Low", color: "#494fdf", impact: "Limited attack surface", timeline: "90 days" },
+                    ].map((row, i) => (
+                      <tr key={i} className="border-b border-[#f4f4f4] last:border-0 hover:bg-[#fafafa] transition-colors">
+                        <td className="py-3 px-4 text-xs font-medium text-[#191c1f]">{row.vuln}</td>
+                        <td className="py-3 px-4">
+                          <Badge className="text-[10px] border-0" style={{ backgroundColor: row.color + "15", color: row.color }}>{row.severity}</Badge>
+                        </td>
+                        <td className="py-3 px-4 text-xs text-[#8d969e] hidden md:table-cell">{row.impact}</td>
+                        <td className="py-3 px-4 text-xs text-[#8d969e]">{row.timeline}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="ports">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+            {[
+              { port: "21", service: "FTP", version: "vsftpd 3.0.3", risk: "Medium", color: "#ec7e00" },
+              { port: "22", service: "SSH", version: "OpenSSH 7.4", risk: "Medium", color: "#ec7e00" },
+              { port: "25", service: "SMTP", version: "Postfix", risk: "Low", color: "#00a87e" },
+              { port: "53", service: "DNS", version: "BIND 9.11.4", risk: "Medium", color: "#ec7e00" },
+              { port: "80", service: "HTTP", version: "nginx 1.20.1", risk: "Low", color: "#00a87e" },
+              { port: "443", service: "HTTPS", version: "nginx 1.20.1", risk: "Low", color: "#00a87e" },
+              { port: "110", service: "POP3", version: "Dovecot", risk: "Low", color: "#00a87e" },
+              { port: "143", service: "IMAP", version: "Dovecot", risk: "Low", color: "#00a87e" },
+              { port: "3306", service: "MySQL", version: "10.3.38", risk: "High", color: "#e23b4a" },
+            ].map((item, i) => (
+              <Card key={i} className="py-0">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Server className="w-3.5 h-3.5 text-[#8d969e]" />
+                      <span className="font-mono text-sm font-semibold text-[#191c1f]">{item.port}</span>
+                    </div>
+                    <Badge className="text-[10px] border-0" style={{ backgroundColor: item.color + "15", color: item.color }}>{item.risk}</Badge>
+                  </div>
+                  <div className="text-xs font-medium text-[#191c1f]">{item.service}</div>
+                  <div className="text-[10px] text-[#8d969e] mt-0.5">{item.version}</div>
+                  {item.port === "3306" && (
+                    <div className="mt-2 flex items-center gap-1.5 text-[#e23b4a] text-[10px] font-medium">
+                      <AlertTriangle className="w-3 h-3" /> Database exposed to internet
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="positive">
+          <Card className="py-0 mt-4">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm">Positive Security Controls</CardTitle>
+              <CardDescription>Existing controls performing well</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid sm:grid-cols-2 gap-3">
+                {[
+                  { label: "Strong Security Headers", desc: "Properly configured with modern standards" },
+                  { label: "TLS/SSL Configuration", desc: "A+ rating with strong encryption" },
+                  { label: "Authentication Security", desc: "CSRF protection, rate limiting implemented" },
+                  { label: "Cloudflare Protection", desc: "DDoS mitigation and WAF capabilities" },
+                  { label: "Error Handling", desc: "No sensitive information disclosure" },
+                  { label: "No Critical OWASP Top 10", desc: "Zero critical vulnerabilities found" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-[#f4f4f4]">
+                    <CheckCircle2 className="w-4 h-4 text-[#00a87e] mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-xs font-medium text-[#191c1f]">{item.label}</div>
+                      <div className="text-[11px] text-[#8d969e]">{item.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="visuals">
+          <div className="grid md:grid-cols-2 gap-4 mt-4">
+            <Card className="py-0">
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Security Radar</CardTitle></CardHeader>
+              <CardContent className="pt-0">
+                <div className="relative aspect-square max-w-xs mx-auto">
+                  <Image src="/idc_security_radar.png" alt="Security Radar" fill className="object-contain" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="py-0">
+              <CardHeader className="pb-2"><CardTitle className="text-sm">Risk Matrix</CardTitle></CardHeader>
+              <CardContent className="pt-0">
+                <div className="relative aspect-square max-w-xs mx-auto">
+                  <Image src="/idc_risk_matrix.png" alt="Risk Matrix" fill className="object-contain" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      {/* Remediation Roadmap */}
+      <Card className="py-0">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm">Remediation Roadmap</CardTitle>
+          <CardDescription>Phased approach to security improvements</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <Accordion type="single" collapsible className="w-full">
+            {[
+              { phase: "Phase 1: Critical Fixes", days: "Days 1-7", color: "#e23b4a", items: ["Move MySQL port 3306 behind firewall", "Implement IP whitelisting for database access", "Restrict WordPress REST API author information", "Review and tighten file permissions"] },
+              { phase: "Phase 2: High Priority", days: "Days 8-30", color: "#ec7e00", items: ["Upgrade nginx to latest stable (1.24+)", "Apply OpenSSH security patches", "Update PHP to supported version", "Implement database activity monitoring"] },
+              { phase: "Phase 3: Medium Priority", days: "Days 31-90", color: "#494fdf", items: ["Implement network segmentation", "Review and tighten service permissions", "Update security policies and procedures", "Conduct security awareness training"] },
+              { phase: "Phase 4: Continuous", days: "Ongoing", color: "#00a87e", items: ["Quarterly penetration testing", "Monthly vulnerability scanning", "Annual security awareness training", "Continuous monitoring and improvement"] },
+            ].map((phase, i) => (
+              <AccordionItem key={i} value={`remediation-${i}`} className="border-[#f4f4f4]">
+                <AccordionTrigger className="text-xs py-3 hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: phase.color }} />
+                    <span className="font-medium text-[#191c1f]">{phase.phase}</span>
+                    <Badge className="text-[10px] border-0" style={{ backgroundColor: phase.color + "15", color: phase.color }}>{phase.days}</Badge>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pl-5">
+                  <ul className="space-y-2">
+                    {phase.items.map((item, j) => (
+                      <li key={j} className="flex items-start gap-2 text-xs text-[#505a63]">
+                        <CheckCircle2 className="w-3 h-3 text-[#00a87e] mt-0.5 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+/* ============================================================
+   MODERNIZATION PANEL
+   ============================================================ */
+function ModernizationPanel() {
+  return (
+    <div className="space-y-6">
+      {/* Architecture grid */}
+      <Card className="py-0">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm">Proposed Architecture</CardTitle>
+          <CardDescription>Headless CMS + Microservices + Container Orchestration</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {[
+              { icon: <Globe className="w-5 h-5" />, name: "Next.js", desc: "SSR/SSG Frontend", color: "#494fdf" },
+              { icon: <Layers className="w-5 h-5" />, name: "API Gateway", desc: "GraphQL / REST", color: "#00a87e" },
+              { icon: <FileText className="w-5 h-5" />, name: "Strapi CMS", desc: "Headless Content", color: "#ec7e00" },
+              { icon: <Cpu className="w-5 h-5" />, name: "Microservices", desc: "Node.js Backend", color: "#e61e49" },
+              { icon: <Shield className="w-5 h-5" />, name: "Auth Service", desc: "Clerk / Auth0", color: "#494fdf" },
+              { icon: <Database className="w-5 h-5" />, name: "PostgreSQL", desc: "Row Level Security", color: "#00a87e" },
+              { icon: <Cloud className="w-5 h-5" />, name: "Cloudflare", desc: "CDN Edge Caching", color: "#ec7e00" },
+              { icon: <HardDrive className="w-5 h-5" />, name: "Docker + K8s", desc: "Containers", color: "#e61e49" },
+              { icon: <ShieldCheck className="w-5 h-5" />, name: "WAF + DDoS", desc: "Enterprise", color: "#494fdf" },
+              { icon: <Activity className="w-5 h-5" />, name: "Monitoring", desc: "Prometheus", color: "#00a87e" },
+            ].map((item, i) => (
+              <div key={i} className="p-4 rounded-xl bg-[#f4f4f4] text-center">
+                <div className="w-9 h-9 rounded-lg mx-auto mb-2 flex items-center justify-center" style={{ backgroundColor: item.color + "15", color: item.color }}>
+                  {item.icon}
+                </div>
+                <div className="text-xs font-medium text-[#191c1f]">{item.name}</div>
+                <div className="text-[10px] text-[#8d969e] mt-0.5">{item.desc}</div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Technology rationale - Accordion */}
+      <Card className="py-0">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm">Technology Selection Rationale</CardTitle>
+          <CardDescription>Why each technology was chosen</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <Accordion type="single" collapsible defaultValue="tech-0">
+            {[
+              { title: "Why Headless CMS (Strapi)?", color: "#494fdf", points: ["API-first design eliminates admin interface exposure", "Fine-grained role-based access control (RBAC)", "Self-hosted for data sovereignty compliance", "No plugin vulnerability inheritance from WordPress", "Built-in GraphQL and REST APIs with rate limiting"] },
+              { title: "Why Next.js Frontend?", color: "#00a87e", points: ["Server-side rendering for SEO and performance", "Static generation — no server-side execution for public pages", "Built-in TypeScript support for type safety", "Automatic code splitting and optimization", "Built-in API routes for custom functionality"] },
+              { title: "Why PostgreSQL over MySQL?", color: "#ec7e00", points: ["Row Level Security for data isolation at DB level", "Native JSON support for flexible data models", "Better concurrent connection performance", "Full encryption at rest and in transit", "Built-in replication and failover"] },
+              { title: "Why Clerk/Auth0 for Authentication?", color: "#e61e49", points: ["Enterprise-grade MFA and threat detection", "SOC2 compliant with passwordless login options", "AI-powered anomaly detection built-in", "Social login integration (Microsoft, Google)", "Short-lived JWT tokens with secure session management"] },
+              { title: "Why Docker + Kubernetes?", color: "#191c1f", points: ["Immutable infrastructure for security", "Easy horizontal scaling and deployment", "Environment consistency across dev/staging/prod", "Blue-green deployment strategy", "Simplified disaster recovery"] },
+            ].map((item, i) => (
+              <AccordionItem key={i} value={`tech-${i}`} className="border-[#f4f4f4]">
+                <AccordionTrigger className="text-xs py-3 hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="font-medium text-[#191c1f]">{item.title}</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pl-5">
+                  <ul className="space-y-1.5">
+                    {item.points.map((point, j) => (
+                      <li key={j} className="flex items-start gap-2 text-xs text-[#505a63]">
+                        <CheckCircle2 className="w-3 h-3 text-[#00a87e] mt-0.5 shrink-0" />
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </CardContent>
+      </Card>
+
+      {/* Performance comparison */}
+      <Card className="py-0">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm">Performance Comparison</CardTitle>
+          <CardDescription>Before vs. after modernization</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { metric: "Page Load", before: "2-3s", after: "<500ms", improvement: "4x faster" },
+              { metric: "DB Queries", before: "50+/page", after: "2-3/page", improvement: "94% less" },
+              { metric: "Security Score", before: "7.2/10", after: "9.5/10", improvement: "+32%" },
+              { metric: "Annual Cost", before: "R 1,733K", after: "R 1,300K", improvement: "-25%" },
+            ].map((item, i) => (
+              <div key={i} className="p-4 rounded-xl bg-[#f4f4f4] text-center">
+                <div className="text-[10px] text-[#8d969e] mb-3 font-medium">{item.metric}</div>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div>
+                    <div className="text-[10px] text-[#e23b4a] mb-0.5">Before</div>
+                    <div className="text-sm font-semibold text-[#e23b4a]">{item.before}</div>
+                  </div>
+                  <ChevronRight className="w-3 h-3 text-[#c9c9cd]" />
+                  <div>
+                    <div className="text-[10px] text-[#00a87e] mb-0.5">After</div>
+                    <div className="text-sm font-semibold text-[#00a87e]">{item.after}</div>
+                  </div>
+                </div>
+                <div className="text-[10px] text-[#00a87e] font-semibold">{item.improvement}</div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Images */}
+      <div className="grid md:grid-cols-2 gap-4">
+        <Card className="py-0">
+          <CardHeader className="pb-2"><CardTitle className="text-sm">Project Scope</CardTitle></CardHeader>
+          <CardContent className="pt-0">
+            <div className="relative aspect-[4/3]">
+              <Image src="/idc_scope_breakdown.png" alt="Scope" fill className="object-contain" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="py-0">
+          <CardHeader className="pb-2"><CardTitle className="text-sm">Sector Coverage</CardTitle></CardHeader>
+          <CardContent className="pt-0">
+            <div className="relative aspect-[4/3]">
+              <Image src="/idc_sectors.png" alt="Sectors" fill className="object-contain" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
 
 /* ============================================================
-   NAVIGATION COMPONENT
+   PROJECT PLAN PANEL
    ============================================================ */
-function Navigation({ activeSection }: { activeSection: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const navItems = [
-    { id: "overview", label: "Overview" },
-    { id: "executive-summary", label: "Executive Summary" },
-    { id: "security", label: "Security Assessment" },
-    { id: "modernization", label: "Modernization" },
-    { id: "project-plan", label: "Project Plan" },
-    { id: "ux-flow", label: "New Portal UX" },
-    { id: "investment", label: "Investment & ROI" },
-    { id: "dashboard", label: "Live Dashboard" },
-  ];
-
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    setIsOpen(false);
-  };
-
+function ProjectPlanPanel() {
   return (
-    <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-[#e0e0e0]/50">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-8 flex items-center justify-between h-16">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#191c1f] flex items-center justify-center">
-              <span className="text-white font-bold text-sm">IDC</span>
-            </div>
-            <span className="font-medium text-[#191c1f] text-sm hidden sm:block">
-              Digital Transformation
-            </span>
-          </div>
-
-          <div className="hidden lg:flex items-center gap-1">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollTo(item.id)}
-                className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
-                  activeSection === item.id
-                    ? "bg-[#191c1f] text-white"
-                    : "text-[#505a63] hover:text-[#191c1f] hover:bg-[#f4f4f4]"
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-
-          <button
-            onClick={() => scrollTo("dashboard")}
-            className="hidden md:flex btn-pill btn-pill-dark text-sm !py-2.5 !px-6"
-          >
-            View Live Dashboard
-            <ExternalLink className="w-4 h-4" />
-          </button>
-
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 rounded-xl hover:bg-[#f4f4f4] transition-colors"
-          >
-            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile Nav */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="fixed inset-0 z-40 bg-white pt-20 px-6 lg:hidden"
-          >
-            <div className="flex flex-col gap-2">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollTo(item.id)}
-                  className={`px-4 py-3 rounded-xl text-base font-medium text-left transition-colors ${
-                    activeSection === item.id
-                      ? "bg-[#191c1f] text-white"
-                      : "text-[#505a63] hover:bg-[#f4f4f4]"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-              <button
-                onClick={() => scrollTo("dashboard")}
-                className="mt-4 btn-pill btn-pill-dark text-base"
-              >
-                View Live Dashboard
-                <ExternalLink className="w-4 h-4" />
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
-}
-
-/* ============================================================
-   SECTION FADE IN HOOK
-   ============================================================ */
-function useSectionObserver(sectionIds: string[]) {
-  const [activeSection, setActiveSection] = useState("overview");
-  const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-          setVisibleSections((prev) => new Set(prev).add(entry.target.id));
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(handleIntersection, {
-      rootMargin: "-20% 0px -70% 0px",
-    });
-
-    const fadeObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisibleSections((prev) => new Set(prev).add(entry.target.id));
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) {
-        observer.observe(el);
-        fadeObserver.observe(el);
-      }
-    });
-
-    return () => {
-      observer.disconnect();
-      fadeObserver.disconnect();
-    };
-  }, [sectionIds]);
-
-  return { activeSection, visibleSections };
-}
-
-/* ============================================================
-   HERO SECTION
-   ============================================================ */
-function HeroSection() {
-  return (
-    <section id="overview" className="min-h-screen flex items-center justify-center bg-white relative overflow-hidden">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-[0.03]">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, #191c1f 1px, transparent 0)`,
-          backgroundSize: '40px 40px'
-        }} />
-      </div>
-
-      <div className="relative max-w-[1440px] mx-auto px-6 md:px-8 py-32 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <Badge variant="outline" className="mb-6 text-xs font-medium tracking-wider uppercase px-4 py-1.5 border-[#c9c9cd] text-[#505a63]">
-            Board Presentation · April 2026
-          </Badge>
-
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5rem] font-medium text-[#191c1f] leading-[1.05] tracking-tight mb-6">
-            Reimagining IDC&apos;s
-            <br />
-            <span className="text-[#505a63]">Digital Infrastructure</span>
-          </h1>
-
-          <p className="text-lg md:text-xl text-[#8d969e] max-w-2xl mx-auto leading-relaxed mb-10">
-            A comprehensive strategy to modernize the Industrial Development Corporation&apos;s
-            technology platform — from security hardening to a complete architectural transformation.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="#executive-summary" className="btn-pill btn-pill-dark">
-              Explore the Vision
-              <ArrowRight className="w-4 h-4" />
-            </a>
-            <a href="#dashboard" className="btn-pill btn-pill-outline">
-              View Live Dashboard
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </div>
-        </motion.div>
-
-        {/* Key stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-3xl mx-auto"
-        >
-          {[
-            { value: "7.2/10", label: "Current Security Score", color: "#ec7e00" },
-            { value: "9.5/10", label: "Target Security Score", color: "#00a87e" },
-            { value: "320%", label: "5-Year ROI", color: "#494fdf" },
-            { value: "80%", label: "Vulnerability Reduction", color: "#00a87e" },
-          ].map((stat, i) => (
-            <div key={i} className="text-center">
-              <div className="text-3xl md:text-4xl font-medium tracking-tight" style={{ color: stat.color }}>
-                {stat.value}
+    <div className="space-y-6">
+      {/* Phase cards */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { phase: "Phase 1", name: "Foundation & Security", weeks: "Wk 1-4", color: "#e23b4a", tasks: ["DMARC/SPF/DKIM implementation", "Docker + Kubernetes setup", "Database migration planning", "Firewall & WAF hardening"] },
+          { phase: "Phase 2", name: "Backend Development", weeks: "Wk 5-10", color: "#ec7e00", tasks: ["Strapi CMS setup", "Auth service integration", "API gateway & microservices", "Content modeling & migration"] },
+          { phase: "Phase 3", name: "Frontend Development", weeks: "Wk 11-18", color: "#494fdf", tasks: ["Next.js + component library", "Core pages development", "Application portal", "Optimization & accessibility"] },
+          { phase: "Phase 4", name: "Testing & Migration", weeks: "Wk 19-22", color: "#00a87e", tasks: ["Security & pen testing", "Performance testing", "Content migration", "UAT & bug fixes"] },
+          { phase: "Phase 5", name: "Go-Live", weeks: "Wk 23-24", color: "#191c1f", tasks: ["Blue-green deployment", "Production go-live", "Smoke testing", "Stakeholder comms"] },
+          { phase: "Phase 6", name: "Handover", weeks: "Wk 25-28", color: "#505a63", tasks: ["Intensive monitoring", "Documentation", "Training sessions", "Project closure"] },
+        ].map((p, i) => (
+          <Card key={i} className="py-0">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-semibold shrink-0" style={{ backgroundColor: p.color }}>
+                  {i + 1}
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-[#191c1f]">{p.name}</div>
+                  <div className="text-[10px] text-[#8d969e]">{p.phase} · {p.weeks}</div>
+                </div>
               </div>
-              <div className="text-sm text-[#8d969e] mt-1">{stat.label}</div>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-   EXECUTIVE SUMMARY SECTION
-   ============================================================ */
-function ExecutiveSummarySection({ visible }: { visible: boolean }) {
-  return (
-    <section id="executive-summary" className="bg-[#f4f4f4] py-24 md:py-32">
-      <div className={`max-w-[1440px] mx-auto px-6 md:px-8 transition-all duration-800 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        <Badge variant="outline" className="mb-4 text-xs font-medium tracking-wider uppercase px-4 py-1.5 border-[#c9c9cd] text-[#505a63]">
-          01 — Executive Summary
-        </Badge>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium text-[#191c1f] tracking-tight leading-tight mb-6 max-w-3xl">
-          Why IDC Needs Digital Transformation Now
-        </h2>
-        <p className="text-lg text-[#505a63] max-w-2xl leading-relaxed mb-16">
-          As South Africa&apos;s primary development finance institution, the IDC handles sensitive applicant data and financial transactions. The current platform presents unacceptable risks for a government entity of this scale.
-        </p>
-
-        <div className="grid md:grid-cols-3 gap-6 mb-16">
-          {[
-            {
-              icon: <Shield className="w-6 h-6" />,
-              title: "Public Trust at Stake",
-              description: "The IDC website is the primary interface for citizens and businesses seeking funding. Security incidents would directly impact investor confidence and international partnerships.",
-              color: "#e23b4a",
-            },
-            {
-              icon: <Database className="w-6 h-6" />,
-              title: "Data Sensitivity Critical",
-              description: "The platform processes personal identification information, financial records, and business plans subject to POPIA, National Cybersecurity Policy, and financial regulations.",
-              color: "#ec7e00",
-            },
-            {
-              icon: <Globe className="w-6 h-6" />,
-              title: "Regulatory Compliance",
-              description: "Subject to POPIA, National Cybersecurity Policy, E-Government Framework, Basel III operational risk requirements, and FSCA guidelines.",
-              color: "#494fdf",
-            },
-          ].map((item, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-2xl p-8 card-hover border border-transparent"
-            >
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style={{ backgroundColor: item.color + '10', color: item.color }}>
-                {item.icon}
-              </div>
-              <h3 className="text-xl font-medium text-[#191c1f] mb-3">{item.title}</h3>
-              <p className="text-[#505a63] leading-relaxed">{item.description}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Current vs Target State */}
-        <div className="bg-white rounded-2xl p-8 md:p-10 border border-[#e0e0e0]">
-          <h3 className="text-xl md:text-2xl font-medium text-[#191c1f] mb-8">Current State vs. Target State</h3>
-          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <XCircle className="w-5 h-5 text-[#e23b4a]" />
-                <h4 className="font-medium text-[#191c1f]">Current State</h4>
-              </div>
-              <div className="space-y-4">
-                {[
-                  { label: "Platform", value: "WordPress 6.5+ with LAMP stack" },
-                  { label: "Security Rating", value: "7.2/10 (Medium Risk)" },
-                  { label: "Performance", value: "2-3 second page loads, 50+ queries/page" },
-                  { label: "Scalability", value: "Vertical scaling only" },
-                  { label: "DMARC", value: "Quarantine policy, no subdomain coverage" },
-                ].map((item, i) => (
-                  <div key={i} className="flex justify-between items-start gap-4 pb-4 border-b border-[#f4f4f4] last:border-0">
-                    <span className="text-sm text-[#8d969e] whitespace-nowrap">{item.label}</span>
-                    <span className="text-sm font-medium text-[#191c1f] text-right">{item.value}</span>
-                  </div>
+              <ul className="space-y-1.5">
+                {p.tasks.map((task, j) => (
+                  <li key={j} className="flex items-start gap-2 text-[11px] text-[#505a63]">
+                    <CircleDot className="w-2.5 h-2.5 mt-0.5 shrink-0 text-[#c9c9cd]" />
+                    {task}
+                  </li>
                 ))}
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <CheckCircle2 className="w-5 h-5 text-[#00a87e]" />
-                <h4 className="font-medium text-[#191c1f]">Target State</h4>
-              </div>
-              <div className="space-y-4">
-                {[
-                  { label: "Platform", value: "Strapi + Next.js + PostgreSQL" },
-                  { label: "Security Rating", value: "9.5/10 (High Security)" },
-                  { label: "Performance", value: "<500ms page loads, 2-3 queries/page" },
-                  { label: "Scalability", value: "Horizontal auto-scaling (K8s)" },
-                  { label: "DMARC", value: "Reject policy on all domains" },
-                ].map((item, i) => (
-                  <div key={i} className="flex justify-between items-start gap-4 pb-4 border-b border-[#f4f4f4] last:border-0">
-                    <span className="text-sm text-[#8d969e] whitespace-nowrap">{item.label}</span>
-                    <span className="text-sm font-medium text-[#00a87e] text-right">{item.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+              </ul>
+            </CardContent>
+          </Card>
+        ))}
       </div>
-    </section>
+
+      {/* Milestones */}
+      <Card className="py-0">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm">Critical Milestones</CardTitle>
+          <CardDescription>Key delivery checkpoints</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {[
+              { name: "DMARC Upgrade", week: "Wk 1" },
+              { name: "Infrastructure", week: "Wk 4" },
+              { name: "DB Migration", week: "Wk 8" },
+              { name: "CMS Ready", week: "Wk 10" },
+              { name: "Frontend MVP", week: "Wk 16" },
+              { name: "Security Tests", week: "Wk 19" },
+              { name: "Content Migrate", week: "Wk 21" },
+              { name: "UAT Sign-off", week: "Wk 22" },
+              { name: "Go-Live", week: "Wk 24" },
+              { name: "Closure", week: "Wk 28" },
+            ].map((m, i) => (
+              <div key={i} className="p-3 rounded-lg bg-[#f4f4f4] text-center">
+                <div className="text-[10px] text-[#8d969e]">{m.week}</div>
+                <div className="text-xs font-medium text-[#191c1f] mt-0.5">{m.name}</div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Cost breakdown */}
+      <Card className="py-0">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm">Development Cost Breakdown</CardTitle>
+          <CardDescription>Total: R 1,580,900</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="grid sm:grid-cols-2 gap-x-8 gap-y-2">
+            {[
+              { label: "DMARC & Email Security", amount: "R 72,000" },
+              { label: "Infrastructure Setup", amount: "R 180,000" },
+              { label: "Backend Development", amount: "R 234,000" },
+              { label: "Frontend Development", amount: "R 342,000" },
+              { label: "Content Migration", amount: "R 123,900" },
+              { label: "Security Implementation", amount: "R 145,400" },
+              { label: "Testing & QA", amount: "R 142,500" },
+              { label: "Deployment", amount: "R 101,100" },
+              { label: "Documentation & Training", amount: "R 114,000" },
+              { label: "Project Management", amount: "R 126,000" },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center justify-between py-2 border-b border-[#f4f4f4] last:border-0">
+                <span className="text-xs text-[#505a63]">{item.label}</span>
+                <span className="text-xs font-medium text-[#191c1f]">{item.amount}</span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
 /* ============================================================
-   SECURITY ASSESSMENT SECTION
+   UX FLOW PANEL
    ============================================================ */
-function SecuritySection({ visible }: { visible: boolean }) {
-  const [activeTab, setActiveTab] = useState("vulnerabilities");
-
+function UXFlowPanel() {
   return (
-    <section id="security" className="bg-white py-24 md:py-32">
-      <div className={`max-w-[1440px] mx-auto px-6 md:px-8 transition-all duration-800 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        <Badge variant="outline" className="mb-4 text-xs font-medium tracking-wider uppercase px-4 py-1.5 border-[#c9c9cd] text-[#505a63]">
-          02 — Security Assessment
-        </Badge>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium text-[#191c1f] tracking-tight leading-tight mb-6 max-w-3xl">
-          Comprehensive Security Audit Results
-        </h2>
-        <p className="text-lg text-[#505a63] max-w-2xl leading-relaxed mb-16">
-          A full security assessment conducted using HexStrike AI Cybersecurity Platform v6.0, including network reconnaissance, web application vulnerability scanning, and performance evaluation.
-        </p>
-
-        {/* Security Score Banner */}
-        <div className="bg-[#191c1f] rounded-2xl p-8 md:p-10 mb-12">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-            <div>
-              <p className="text-[#8d969e] text-sm font-medium mb-2">Overall Security Rating</p>
-              <div className="flex items-center gap-4">
-                <span className="text-5xl md:text-6xl font-medium text-white">7.2<span className="text-2xl text-[#8d969e]">/10</span></span>
-                <Badge className="bg-[#ec7e00] text-white border-0 px-3 py-1 text-sm">AMBER — Medium Risk</Badge>
-              </div>
-            </div>
-            <div className="flex gap-6">
-              <div className="text-center">
-                <div className="text-2xl font-medium text-white">9</div>
-                <div className="text-xs text-[#8d969e]">Open Ports</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-medium text-white">6</div>
-                <div className="text-xs text-[#8d969e]">Risk Items</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-medium text-white">0</div>
-                <div className="text-xs text-[#8d969e]">Critical CVEs</div>
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+    <div className="space-y-6">
+      {/* Design principles */}
+      <Card className="py-0">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm">Design Principles</CardTitle>
+          <CardDescription>Guiding principles for the new portal</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
-              { label: "Security Headers", status: "Pass", color: "#00a87e" },
-              { label: "TLS/SSL", status: "A+ Rating", color: "#00a87e" },
-              { label: "CSRF Protection", status: "Pass", color: "#00a87e" },
-              { label: "Cloudflare WAF", status: "Active", color: "#00a87e" },
-              { label: "MySQL Exposure", status: "At Risk", color: "#e23b4a" },
+              { icon: <ShieldCheck className="w-4 h-4" />, title: "Trust & Authority", desc: "Clean typography, institutional gravitas" },
+              { icon: <Smartphone className="w-4 h-4" />, title: "Mobile-First", desc: "Starts at 320px, fully responsive" },
+              { icon: <Eye className="w-4 h-4" />, title: "Accessibility First", desc: "WCAG 2.1 AA from day one" },
+              { icon: <Zap className="w-4 h-4" />, title: "Performance", desc: "Optimized for 2G/3G regions" },
+              { icon: <Users className="w-4 h-4" />, title: "Inclusive Design", desc: "All 11 official SA languages" },
+              { icon: <Palette className="w-4 h-4" />, title: "IDC Design System", desc: "shadcn/ui + Tailwind CSS" },
             ].map((item, i) => (
-              <div key={i} className="bg-white/5 rounded-xl p-4 text-center">
-                <div className="w-2 h-2 rounded-full mx-auto mb-2" style={{ backgroundColor: item.color }} />
-                <div className="text-white text-sm font-medium">{item.status}</div>
-                <div className="text-[#8d969e] text-xs mt-1">{item.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-12">
-          <TabsList className="bg-[#f4f4f4] p-1 rounded-full h-auto">
-            <TabsTrigger value="vulnerabilities" className="rounded-full px-5 py-2.5 text-sm data-[state=active]:bg-[#191c1f] data-[state=active]:text-white">
-              Vulnerabilities
-            </TabsTrigger>
-            <TabsTrigger value="ports" className="rounded-full px-5 py-2.5 text-sm data-[state=active]:bg-[#191c1f] data-[state=active]:text-white">
-              Port Analysis
-            </TabsTrigger>
-            <TabsTrigger value="visuals" className="rounded-full px-5 py-2.5 text-sm data-[state=active]:bg-[#191c1f] data-[state=active]:text-white">
-              Visual Reports
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="vulnerabilities" className="mt-8">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b-2 border-[#e0e0e0]">
-                    <th className="text-left py-4 px-4 text-sm font-medium text-[#8d969e]">Vulnerability</th>
-                    <th className="text-left py-4 px-4 text-sm font-medium text-[#8d969e]">Severity</th>
-                    <th className="text-left py-4 px-4 text-sm font-medium text-[#8d969e]">Likelihood</th>
-                    <th className="text-left py-4 px-4 text-sm font-medium text-[#8d969e] hidden md:table-cell">Impact</th>
-                    <th className="text-left py-4 px-4 text-sm font-medium text-[#8d969e] hidden lg:table-cell">Timeline</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { vuln: "MySQL Database Exposed to Internet", severity: "High", sevColor: "#e23b4a", likelihood: "Medium", impact: "Data breach, regulatory fines", timeline: "7 days" },
-                    { vuln: "WordPress Author Info Disclosure", severity: "Medium", sevColor: "#ec7e00", likelihood: "High", impact: "Phishing, social engineering", timeline: "14 days" },
-                    { vuln: "Outdated nginx (1.20.1)", severity: "Medium", sevColor: "#ec7e00", likelihood: "Medium", impact: "Known CVE exploitation", timeline: "30 days" },
-                    { vuln: "Outdated OpenSSH (7.4)", severity: "Medium", sevColor: "#ec7e00", likelihood: "Low", impact: "Known vulnerabilities", timeline: "30 days" },
-                    { vuln: "FTP Service Exposure", severity: "Low", sevColor: "#494fdf", likelihood: "Medium", impact: "Limited attack surface", timeline: "90 days" },
-                    { vuln: "DMARC Subdomain Gap", severity: "Medium", sevColor: "#ec7e00", likelihood: "High", impact: "Email spoofing risk", timeline: "14 days" },
-                  ].map((row, i) => (
-                    <tr key={i} className="border-b border-[#f4f4f4] hover:bg-[#f4f4f4]/50 transition-colors">
-                      <td className="py-4 px-4 text-sm font-medium text-[#191c1f]">{row.vuln}</td>
-                      <td className="py-4 px-4">
-                        <Badge className="text-white border-0 text-xs" style={{ backgroundColor: row.sevColor }}>{row.severity}</Badge>
-                      </td>
-                      <td className="py-4 px-4 text-sm text-[#505a63]">{row.likelihood}</td>
-                      <td className="py-4 px-4 text-sm text-[#505a63] hidden md:table-cell">{row.impact}</td>
-                      <td className="py-4 px-4 text-sm text-[#505a63] hidden lg:table-cell">{row.timeline}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="ports" className="mt-8">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { port: "21", service: "FTP", version: "vsftpd 3.0.3", state: "open", risk: "Medium" },
-                { port: "22", service: "SSH", version: "OpenSSH 7.4", state: "open", risk: "Medium" },
-                { port: "25", service: "SMTP", version: "Postfix", state: "open", risk: "Low" },
-                { port: "53", service: "DNS", version: "BIND 9.11.4", state: "open", risk: "Medium" },
-                { port: "80", service: "HTTP", version: "nginx 1.20.1", state: "open", risk: "Low" },
-                { port: "443", service: "HTTPS", version: "nginx 1.20.1", state: "open", risk: "Low" },
-                { port: "110", service: "POP3", version: "Dovecot", state: "open", risk: "Low" },
-                { port: "143", service: "IMAP", version: "Dovecot", state: "open", risk: "Low" },
-                { port: "3306", service: "MySQL", version: "10.3.38", state: "open", risk: "High" },
-              ].map((item, i) => (
-                <div key={i} className="border border-[#e0e0e0] rounded-xl p-5 card-hover">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Server className="w-4 h-4 text-[#8d969e]" />
-                      <span className="font-mono text-lg font-medium text-[#191c1f]">{item.port}</span>
-                    </div>
-                    <Badge
-                      className="text-white border-0 text-xs"
-                      style={{
-                        backgroundColor: item.risk === "High" ? "#e23b4a" : item.risk === "Medium" ? "#ec7e00" : "#00a87e"
-                      }}
-                    >
-                      {item.risk}
-                    </Badge>
-                  </div>
-                  <div className="text-sm font-medium text-[#191c1f]">{item.service}</div>
-                  <div className="text-xs text-[#8d969e] mt-1">{item.version}</div>
-                  {item.port === "3306" && (
-                    <div className="mt-3 flex items-center gap-2 text-[#e23b4a] text-xs font-medium">
-                      <AlertTriangle className="w-3 h-3" />
-                      Database exposed to internet
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="visuals" className="mt-8">
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-[#f4f4f4] rounded-2xl p-6">
-                <h4 className="font-medium text-[#191c1f] mb-4">Security Radar Assessment</h4>
-                <div className="relative aspect-square max-w-sm mx-auto">
-                  <Image
-                    src="/idc_security_radar.png"
-                    alt="IDC Security Radar Assessment"
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-              </div>
-              <div className="bg-[#f4f4f4] rounded-2xl p-6">
-                <h4 className="font-medium text-[#191c1f] mb-4">Risk Matrix Analysis</h4>
-                <div className="relative aspect-square max-w-sm mx-auto">
-                  <Image
-                    src="/idc_risk_matrix.png"
-                    alt="IDC Risk Matrix"
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-
-        {/* Positive findings */}
-        <div className="bg-[#f4f4f4] rounded-2xl p-8">
-          <h3 className="text-xl font-medium text-[#191c1f] mb-6">Positive Security Controls Identified</h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              "Strong Security Headers — Properly configured with modern standards",
-              "TLS/SSL Configuration — A+ rating with strong encryption",
-              "Authentication Security — CSRF protection, rate limiting",
-              "Cloudflare Protection — DDoS mitigation and WAF capabilities",
-              "Error Handling — No sensitive information disclosure",
-              "No Critical OWASP Top 10 vulnerabilities found",
-            ].map((item, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-[#00a87e] mt-0.5 shrink-0" />
-                <span className="text-sm text-[#505a63]">{item}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-   TECHNICAL MODERNIZATION SECTION
-   ============================================================ */
-function ModernizationSection({ visible }: { visible: boolean }) {
-  return (
-    <section id="modernization" className="bg-[#191c1f] py-24 md:py-32">
-      <div className={`max-w-[1440px] mx-auto px-6 md:px-8 transition-all duration-800 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        <Badge variant="outline" className="mb-4 text-xs font-medium tracking-wider uppercase px-4 py-1.5 border-[#505a63] text-[#8d969e]">
-          03 — Technical Modernization
-        </Badge>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium text-white tracking-tight leading-tight mb-6 max-w-3xl">
-          From Monolithic WordPress to Modern Architecture
-        </h2>
-        <p className="text-lg text-[#8d969e] max-w-2xl leading-relaxed mb-16">
-          A complete architectural redesign moving from the current WordPress monolith to a secure, scalable, headless CMS-based system with microservices.
-        </p>
-
-        {/* Architecture Diagram */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-10 mb-12">
-          <h3 className="text-lg font-medium text-white mb-8">Proposed Architecture</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {[
-              { icon: <Globe className="w-6 h-6" />, name: "Next.js Frontend", desc: "SSR/SSG + CDN", color: "#494fdf" },
-              { icon: <Layers className="w-6 h-6" />, name: "API Gateway", desc: "GraphQL / REST", color: "#00a87e" },
-              { icon: <FileText className="w-6 h-6" />, name: "Strapi CMS", desc: "Headless Content", color: "#ec7e00" },
-              { icon: <Cpu className="w-6 h-6" />, name: "Microservices", desc: "Node.js Backend", color: "#e61e49" },
-              { icon: <Shield className="w-6 h-6" />, name: "Auth Service", desc: "Clerk / Auth0", color: "#494fdf" },
-              { icon: <Database className="w-6 h-6" />, name: "PostgreSQL", desc: "Row Level Security", color: "#00a87e" },
-              { icon: <Cloud className="w-6 h-6" />, name: "Cloudflare CDN", desc: "Edge Caching", color: "#ec7e00" },
-              { icon: <Settings className="w-6 h-6" />, name: "Docker + K8s", desc: "Container Orchestration", color: "#e61e49" },
-              { icon: <ShieldCheck className="w-6 h-6" />, name: "WAF + DDoS", desc: "Cloudflare Enterprise", color: "#494fdf" },
-              { icon: <Zap className="w-6 h-6" />, name: "Monitoring", desc: "Prometheus + Grafana", color: "#00a87e" },
-            ].map((item, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-5 text-center hover:bg-white/10 transition-colors">
-                <div className="w-10 h-10 rounded-lg mx-auto mb-3 flex items-center justify-center" style={{ backgroundColor: item.color + '20', color: item.color }}>
+              <div key={i} className="p-3 rounded-xl bg-[#f4f4f4]">
+                <div className="w-8 h-8 rounded-lg bg-[#191c1f] flex items-center justify-center mb-2 text-white">
                   {item.icon}
                 </div>
-                <div className="text-sm font-medium text-white">{item.name}</div>
-                <div className="text-xs text-[#8d969e] mt-1">{item.desc}</div>
+                <div className="text-xs font-medium text-[#191c1f]">{item.title}</div>
+                <div className="text-[11px] text-[#8d969e]">{item.desc}</div>
               </div>
             ))}
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        {/* Why these technologies */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          {[
-            {
-              title: "Why Headless CMS (Strapi)?",
-              points: [
-                "API-first design eliminates admin interface exposure",
-                "Fine-grained role-based access control (RBAC)",
-                "Self-hosted for data sovereignty compliance",
-                "No plugin vulnerability inheritance from WordPress",
-              ],
-            },
-            {
-              title: "Why Next.js Frontend?",
-              points: [
-                "Server-side rendering for SEO and performance",
-                "Static generation for security (no server execution)",
-                "Built-in TypeScript support for type safety",
-                "Automatic code splitting and optimization",
-              ],
-            },
-            {
-              title: "Why PostgreSQL over MySQL?",
-              points: [
-                "Row Level Security for data isolation at DB level",
-                "Better concurrent connection performance",
-                "Full encryption — data at rest and in transit",
-                "Built-in replication and failover",
-              ],
-            },
-            {
-              title: "Why Clerk/Auth0 for Authentication?",
-              points: [
-                "Enterprise-grade MFA and threat detection",
-                "SOC2 compliant, passwordless login options",
-                "AI-powered anomaly detection built-in",
-                "Short-lived JWT tokens with secure session management",
-              ],
-            },
-          ].map((card, i) => (
-            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-8">
-              <h3 className="text-lg font-medium text-white mb-5">{card.title}</h3>
-              <div className="space-y-3">
-                {card.points.map((point, j) => (
-                  <div key={j} className="flex items-start gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-[#00a87e] mt-1 shrink-0" />
-                    <span className="text-sm text-[#8d969e] leading-relaxed">{point}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* User flows */}
+      <Tabs defaultValue="registration">
+        <TabsList className="bg-[#f4f4f4]">
+          <TabsTrigger value="registration">Registration (8 Steps)</TabsTrigger>
+          <TabsTrigger value="funding">Funding Application (7 Steps)</TabsTrigger>
+          <TabsTrigger value="navigation">Navigation Structure</TabsTrigger>
+        </TabsList>
 
-        {/* Performance comparison */}
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { metric: "Page Load", before: "2-3s", after: "<500ms", improvement: "4x faster" },
-            { metric: "DB Queries", before: "50+/page", after: "2-3/page", improvement: "94% reduction" },
-            { metric: "Security Score", before: "7.2/10", after: "9.5/10", improvement: "+32%" },
-            { metric: "Annual Cost", before: "R 1,733K", after: "R 1,300K", improvement: "25% savings" },
-          ].map((item, i) => (
-            <div key={i} className="text-center">
-              <div className="text-sm text-[#8d969e] mb-4">{item.metric}</div>
-              <div className="flex items-center justify-center gap-3 mb-3">
-                <div>
-                  <div className="text-xs text-[#e23b4a] mb-1">Before</div>
-                  <div className="text-lg font-medium text-[#e23b4a]">{item.before}</div>
-                </div>
-                <ArrowRight className="w-4 h-4 text-[#8d969e]" />
-                <div>
-                  <div className="text-xs text-[#00a87e] mb-1">After</div>
-                  <div className="text-lg font-medium text-[#00a87e]">{item.after}</div>
-                </div>
-              </div>
-              <div className="text-xs text-[#00a87e] font-medium">{item.improvement}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-   PROJECT PLAN SECTION
-   ============================================================ */
-function ProjectPlanSection({ visible }: { visible: boolean }) {
-  const phases = [
-    {
-      phase: "Phase 1",
-      name: "Foundation & Security",
-      weeks: "Weeks 1–4",
-      tasks: [
-        "DMARC/SPF/DKIM implementation",
-        "Infrastructure setup (Docker, Kubernetes)",
-        "Database migration planning",
-        "Security hardening (firewall, WAF)",
-      ],
-      color: "#e23b4a",
-    },
-    {
-      phase: "Phase 2",
-      name: "Backend Development",
-      weeks: "Weeks 5–10",
-      tasks: [
-        "Strapi CMS setup and configuration",
-        "Authentication service integration",
-        "API gateway and microservices",
-        "Content modeling and migration scripts",
-      ],
-      color: "#ec7e00",
-    },
-    {
-      phase: "Phase 3",
-      name: "Frontend Development",
-      weeks: "Weeks 11–18",
-      tasks: [
-        "Next.js setup and component library",
-        "Core pages development",
-        "Application portal development",
-        "Polish, optimization, accessibility",
-      ],
-      color: "#494fdf",
-    },
-    {
-      phase: "Phase 4",
-      name: "Testing & Migration",
-      weeks: "Weeks 19–22",
-      tasks: [
-        "Security testing and pen testing",
-        "Performance testing and optimization",
-        "Content migration and validation",
-        "UAT and bug fixes",
-      ],
-      color: "#00a87e",
-    },
-    {
-      phase: "Phase 5",
-      name: "Go-Live & Handover",
-      weeks: "Weeks 23–28",
-      tasks: [
-        "Staging deployment and final testing",
-        "Blue-green production deployment",
-        "Intensive monitoring (2 weeks)",
-        "Documentation, training, and handover",
-      ],
-      color: "#191c1f",
-    },
-  ];
-
-  const milestones = [
-    { name: "DMARC Policy Upgrade", week: "Week 1", done: false },
-    { name: "Infrastructure Ready", week: "Week 4", done: false },
-    { name: "Database Migration", week: "Week 8", done: false },
-    { name: "CMS Configuration", week: "Week 10", done: false },
-    { name: "Frontend MVP", week: "Week 16", done: false },
-    { name: "Security Testing", week: "Week 19", done: false },
-    { name: "Content Migration", week: "Week 21", done: false },
-    { name: "UAT Sign-off", week: "Week 22", done: false },
-    { name: "Go-Live", week: "Week 24", done: false },
-    { name: "Project Closure", week: "Week 28", done: false },
-  ];
-
-  return (
-    <section id="project-plan" className="bg-[#f4f4f4] py-24 md:py-32">
-      <div className={`max-w-[1440px] mx-auto px-6 md:px-8 transition-all duration-800 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        <Badge variant="outline" className="mb-4 text-xs font-medium tracking-wider uppercase px-4 py-1.5 border-[#c9c9cd] text-[#505a63]">
-          04 — Project Plan
-        </Badge>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium text-[#191c1f] tracking-tight leading-tight mb-6 max-w-3xl">
-          Full Cycle Development Plan
-        </h2>
-        <p className="text-lg text-[#505a63] max-w-2xl leading-relaxed mb-16">
-          A 28-week comprehensive plan covering every aspect of the rebuild — from foundation infrastructure to go-live and post-launch monitoring.
-        </p>
-
-        {/* Timeline */}
-        <div className="grid gap-6 mb-16">
-          {phases.map((phase, i) => (
-            <div key={i} className="bg-white rounded-2xl p-6 md:p-8 border border-[#e0e0e0] card-hover">
-              <div className="flex flex-col md:flex-row md:items-center gap-4 mb-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-medium" style={{ backgroundColor: phase.color }}>
-                    {i + 1}
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-[#191c1f]">{phase.name}</h3>
-                    <p className="text-sm text-[#8d969e]">{phase.phase} · {phase.weeks}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-3">
-                {phase.tasks.map((task, j) => (
-                  <div key={j} className="flex items-center gap-3">
-                    <ChevronRight className="w-4 h-4 text-[#8d969e] shrink-0" />
-                    <span className="text-sm text-[#505a63]">{task}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Scope images */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <div className="bg-white rounded-2xl p-6 border border-[#e0e0e0]">
-            <h4 className="font-medium text-[#191c1f] mb-4">Project Scope Breakdown</h4>
-            <div className="relative aspect-[4/3]">
-              <Image
-                src="/idc_scope_breakdown.png"
-                alt="IDC Project Scope Breakdown"
-                fill
-                className="object-contain"
-              />
-            </div>
-          </div>
-          <div className="bg-white rounded-2xl p-6 border border-[#e0e0e0]">
-            <h4 className="font-medium text-[#191c1f] mb-4">Sector Coverage</h4>
-            <div className="relative aspect-[4/3]">
-              <Image
-                src="/idc_sectors.png"
-                alt="IDC Sectors Coverage"
-                fill
-                className="object-contain"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Milestones */}
-        <div className="bg-white rounded-2xl p-8 border border-[#e0e0e0]">
-          <h3 className="text-xl font-medium text-[#191c1f] mb-8">Critical Milestones</h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {milestones.map((milestone, i) => (
-              <div key={i} className="text-center p-4 rounded-xl bg-[#f4f4f4]">
-                <div className="text-xs text-[#8d969e] mb-2">{milestone.week}</div>
-                <div className="text-sm font-medium text-[#191c1f]">{milestone.name}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-   UX FLOW SECTION
-   ============================================================ */
-function UXFlowSection({ visible }: { visible: boolean }) {
-  return (
-    <section id="ux-flow" className="bg-white py-24 md:py-32">
-      <div className={`max-w-[1440px] mx-auto px-6 md:px-8 transition-all duration-800 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        <Badge variant="outline" className="mb-4 text-xs font-medium tracking-wider uppercase px-4 py-1.5 border-[#c9c9cd] text-[#505a63]">
-          05 — New Portal UX
-        </Badge>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium text-[#191c1f] tracking-tight leading-tight mb-6 max-w-3xl">
-          Redesigned Client Portal Experience
-        </h2>
-        <p className="text-lg text-[#505a63] max-w-2xl leading-relaxed mb-16">
-          A complete UX overhaul built on modern design principles — mobile-first, accessible (WCAG 2.1 AA), and optimized for users across all 11 South African official languages.
-        </p>
-
-        {/* Design principles */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {[
-            { icon: <ShieldCheck className="w-6 h-6" />, title: "Trust & Authority", desc: "Clean typography, institutional gravitas, and the IDC brand identity reinforce credibility at every touchpoint." },
-            { icon: <Smartphone className="w-6 h-6" />, title: "Mobile-First Responsive", desc: "Layouts start at 320px and progressively enhance. Critical flows fully functional on mobile devices." },
-            { icon: <Eye className="w-6 h-6" />, title: "Accessibility First", desc: "WCAG 2.1 AA compliance from day one. Keyboard navigable, screen reader compatible." },
-            { icon: <Zap className="w-6 h-6" />, title: "Performance Optimized", desc: "Lazy loading, code splitting, compressed assets for 2G/3G connectivity regions." },
-            { icon: <Users className="w-6 h-6" />, title: "Inclusive Design", desc: "Support for all 11 official SA languages. Grade 10 reading level. Plain language throughout." },
-            { icon: <Palette className="w-6 h-6" />, title: "IDC Design System", desc: "Built on shadcn/ui primitives with Tailwind CSS, customised to IDC design tokens." },
-          ].map((item, i) => (
-            <div key={i} className="border border-[#e0e0e0] rounded-2xl p-6 card-hover">
-              <div className="w-12 h-12 rounded-xl bg-[#f4f4f4] flex items-center justify-center mb-5 text-[#191c1f]">
-                {item.icon}
-              </div>
-              <h3 className="text-base font-medium text-[#191c1f] mb-2">{item.title}</h3>
-              <p className="text-sm text-[#505a63] leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Key user flows */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <div className="bg-[#f4f4f4] rounded-2xl p-8">
-            <h3 className="text-lg font-medium text-[#191c1f] mb-6">Registration Flow (8 Steps)</h3>
-            <div className="space-y-3">
-              {[
-                "Account Type Selection (Applicant/Student/Vendor)",
-                "Personal Details (Name, ID, Email, Mobile)",
-                "Email Verification (OTP Code)",
-                "Phone Verification (SMS OTP)",
-                "Password Creation (Strength Meter)",
-                "MFA Setup (Authenticator App QR)",
-                "Profile Completion (Industry, Sector, Province)",
-                "Terms Acceptance (T&Cs, POPIA Consent)",
-              ].map((step, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-[#191c1f] text-white text-xs flex items-center justify-center shrink-0 mt-0.5">
-                    {i + 1}
-                  </div>
-                  <span className="text-sm text-[#505a63]">{step}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-[#f4f4f4] rounded-2xl p-8">
-            <h3 className="text-lg font-medium text-[#191c1f] mb-6">Funding Application Wizard (7 Steps)</h3>
-            <div className="space-y-3">
-              {[
-                "Eligibility Check (Funding amount, industry, B-BBEE)",
-                "Organisation Details (CIPC lookup, tax verification)",
-                "Funding Request (Amount, product, purpose)",
-                "Financial Information (Turnover, projections, funding history)",
-                "Business Plan Upload (Documents, financial statements)",
-                "Document Submission (Supporting files, certifications)",
-                "Review & Submit (Summary, declaration, confirmation)",
-              ].map((step, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-[#00838F] text-white text-xs flex items-center justify-center shrink-0 mt-0.5">
-                    {i + 1}
-                  </div>
-                  <span className="text-sm text-[#505a63]">{step}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation structure */}
-        <div className="bg-[#191c1f] rounded-2xl p-8">
-          <h3 className="text-lg font-medium text-white mb-6">Portal Navigation Structure</h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { title: "Funding", items: ["Apply for Funding", "My Applications", "Find a Fund", "Funding Checklist"] },
-              { title: "Portfolio", items: ["My Loans", "Repayments", "Statements", "Collateral & Covenants"] },
-              { title: "Bursaries", items: ["Available Programmes", "My Applications", "Progress Reports", "Disbursements"] },
-              { title: "Tenders", items: ["Active Tenders", "My Bids", "Vendor Registration", "Tender Archive"] },
-              { title: "Documents", items: ["My Documents", "Shared With Me", "Upload Document"] },
-              { title: "Messages", items: ["Inbox", "Sent", "Compose"] },
-              { title: "Profile", items: ["Personal Details", "Organisation", "Security Settings", "Notifications"] },
-              { title: "Help", items: ["FAQ", "Contact Us", "Submit a Ticket"] },
-            ].map((section, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-4">
-                <div className="text-sm font-medium text-white mb-3">{section.title}</div>
-                <div className="space-y-2">
-                  {section.items.map((item, j) => (
-                    <div key={j} className="flex items-center gap-2">
-                      <ChevronRight className="w-3 h-3 text-[#8d969e]" />
-                      <span className="text-xs text-[#8d969e]">{item}</span>
+        <TabsContent value="registration">
+          <Card className="py-0 mt-4">
+            <CardContent className="p-5">
+              <div className="space-y-2.5">
+                {[
+                  { step: 1, title: "Account Type Selection", desc: "Applicant / Student / Vendor" },
+                  { step: 2, title: "Personal Details", desc: "Name, ID, Email, Mobile" },
+                  { step: 3, title: "Email Verification", desc: "OTP code sent to email" },
+                  { step: 4, title: "Phone Verification", desc: "SMS OTP verification" },
+                  { step: 5, title: "Password Creation", desc: "Strength meter & requirements" },
+                  { step: 6, title: "MFA Setup", desc: "Authenticator app QR code" },
+                  { step: 7, title: "Profile Completion", desc: "Industry, Sector, Province" },
+                  { step: 8, title: "Terms Acceptance", desc: "T&Cs, POPIA consent" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-[#f4f4f4]">
+                    <div className="w-7 h-7 rounded-full bg-[#191c1f] text-white text-[11px] flex items-center justify-center shrink-0 font-semibold">{item.step}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-[#191c1f]">{item.title}</div>
+                      <div className="text-[10px] text-[#8d969e]">{item.desc}</div>
                     </div>
-                  ))}
-                </div>
+                    <ChevronRight className="w-3 h-3 text-[#c9c9cd] shrink-0" />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="funding">
+          <Card className="py-0 mt-4">
+            <CardContent className="p-5">
+              <div className="space-y-2.5">
+                {[
+                  { step: 1, title: "Eligibility Check", desc: "Funding amount, industry, B-BBEE" },
+                  { step: 2, title: "Organisation Details", desc: "CIPC lookup, tax verification" },
+                  { step: 3, title: "Funding Request", desc: "Amount, product, purpose" },
+                  { step: 4, title: "Financial Information", desc: "Turnover, projections" },
+                  { step: 5, title: "Business Plan Upload", desc: "Documents, financial statements" },
+                  { step: 6, title: "Document Submission", desc: "Supporting files, certifications" },
+                  { step: 7, title: "Review & Submit", desc: "Summary, declaration, confirmation" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-[#f4f4f4]">
+                    <div className="w-7 h-7 rounded-full bg-[#00838F] text-white text-[11px] flex items-center justify-center shrink-0 font-semibold">{item.step}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-[#191c1f]">{item.title}</div>
+                      <div className="text-[10px] text-[#8d969e]">{item.desc}</div>
+                    </div>
+                    <ChevronRight className="w-3 h-3 text-[#c9c9cd] shrink-0" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="navigation">
+          <Card className="py-0 mt-4">
+            <CardContent className="p-5">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {[
+                  { title: "Funding", items: ["Apply", "My Applications", "Find a Fund", "Checklist"] },
+                  { title: "Portfolio", items: ["My Loans", "Repayments", "Statements", "Collateral"] },
+                  { title: "Bursaries", items: ["Programmes", "My Applications", "Reports", "Disbursements"] },
+                  { title: "Tenders", items: ["Active Tenders", "My Bids", "Vendor Reg", "Archive"] },
+                  { title: "Documents", items: ["My Documents", "Shared With Me", "Upload"] },
+                  { title: "Messages", items: ["Inbox", "Sent", "Compose"] },
+                  { title: "Profile", items: ["Personal", "Organisation", "Security", "Notifications"] },
+                  { title: "Help", items: ["FAQ", "Contact Us", "Submit Ticket"] },
+                ].map((section, i) => (
+                  <div key={i} className="p-3 rounded-xl bg-[#f4f4f4]">
+                    <div className="text-xs font-medium text-[#191c1f] mb-2">{section.title}</div>
+                    <div className="space-y-1">
+                      {section.items.map((item, j) => (
+                        <div key={j} className="flex items-center gap-1.5 text-[11px] text-[#8d969e]">
+                          <ChevronRight className="w-2.5 h-2.5" />
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
 
 /* ============================================================
-   INVESTMENT & ROI SECTION
+   INVESTMENT PANEL
    ============================================================ */
-function InvestmentSection({ visible }: { visible: boolean }) {
+function InvestmentPanel() {
   return (
-    <section id="investment" className="bg-[#f4f4f4] py-24 md:py-32">
-      <div className={`max-w-[1440px] mx-auto px-6 md:px-8 transition-all duration-800 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        <Badge variant="outline" className="mb-4 text-xs font-medium tracking-wider uppercase px-4 py-1.5 border-[#c9c9cd] text-[#505a63]">
-          06 — Investment & ROI
-        </Badge>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium text-[#191c1f] tracking-tight leading-tight mb-6 max-w-3xl">
-          The Business Case for Transformation
-        </h2>
-        <p className="text-lg text-[#505a63] max-w-2xl leading-relaxed mb-16">
-          A detailed financial breakdown demonstrating the clear return on investment and long-term value of the modernization initiative.
-        </p>
+    <div className="space-y-6">
+      {/* ROI KPI cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Total Investment" value="R 1.58M" sub="Development costs" icon={<DollarSign className="w-4 h-4" />} color="#191c1f" />
+        <StatCard label="Payback Period" value="18 mo" sub="Full cost recovery" icon={<Clock className="w-4 h-4" />} color="#494fdf" />
+        <StatCard label="5-Year ROI" value="320%" sub="Return on investment" icon={<TrendingUp className="w-4 h-4" />} color="#00a87e" />
+        <StatCard label="Annual Savings" value="R 433K" sub="25% cost reduction" icon={<BarChart3 className="w-4 h-4" />} color="#ec7e00" trend={{ value: "-25%", up: true }} />
+      </div>
 
-        {/* Key ROI metrics */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {[
-            { metric: "Total Investment", value: "R 1.58M", sub: "Development costs", color: "#191c1f" },
-            { metric: "Payback Period", value: "18 mo", sub: "Full cost recovery", color: "#494fdf" },
-            { metric: "5-Year ROI", value: "320%", sub: "Return on investment", color: "#00a87e" },
-            { metric: "Annual Savings", value: "R 433K", sub: "25% cost reduction", color: "#ec7e00" },
-          ].map((item, i) => (
-            <div key={i} className="bg-white rounded-2xl p-6 border border-[#e0e0e0]">
-              <div className="text-3xl md:text-4xl font-medium tracking-tight" style={{ color: item.color }}>{item.value}</div>
-              <div className="text-sm font-medium text-[#191c1f] mt-2">{item.metric}</div>
-              <div className="text-xs text-[#8d969e] mt-1">{item.sub}</div>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Cost breakdown */}
-          <div className="bg-white rounded-2xl p-8 border border-[#e0e0e0]">
-            <h3 className="text-xl font-medium text-[#191c1f] mb-6">Development Cost Breakdown</h3>
-            <div className="space-y-4">
+      <div className="grid md:grid-cols-2 gap-4">
+        {/* Cost breakdown */}
+        <Card className="py-0">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm">Development Cost Breakdown</CardTitle>
+            <CardDescription>Total: R 1,580,900</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-2">
               {[
-                { label: "DMARC & Email Security", amount: "R 72,000" },
-                { label: "Infrastructure Setup", amount: "R 180,000" },
-                { label: "Backend Development", amount: "R 234,000" },
-                { label: "Frontend Development", amount: "R 342,000" },
-                { label: "Content Migration", amount: "R 123,900" },
-                { label: "Security Implementation", amount: "R 145,400" },
-                { label: "Testing & QA", amount: "R 142,500" },
-                { label: "Deployment", amount: "R 101,100" },
-                { label: "Documentation & Training", amount: "R 114,000" },
-                { label: "Project Management", amount: "R 126,000" },
+                { label: "DMARC & Email Security", amount: "R 72,000", pct: 5 },
+                { label: "Infrastructure Setup", amount: "R 180,000", pct: 11 },
+                { label: "Backend Development", amount: "R 234,000", pct: 15 },
+                { label: "Frontend Development", amount: "R 342,000", pct: 22 },
+                { label: "Content Migration", amount: "R 123,900", pct: 8 },
+                { label: "Security Implementation", amount: "R 145,400", pct: 9 },
+                { label: "Testing & QA", amount: "R 142,500", pct: 9 },
+                { label: "Deployment", amount: "R 101,100", pct: 6 },
+                { label: "Documentation & Training", amount: "R 114,000", pct: 7 },
+                { label: "Project Management", amount: "R 126,000", pct: 8 },
               ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between pb-3 border-b border-[#f4f4f4] last:border-0">
-                  <span className="text-sm text-[#505a63]">{item.label}</span>
-                  <span className="text-sm font-medium text-[#191c1f]">{item.amount}</span>
+                <div key={i}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] text-[#505a63]">{item.label}</span>
+                    <span className="text-[11px] font-medium text-[#191c1f]">{item.amount}</span>
+                  </div>
+                  <div className="h-1.5 bg-[#f4f4f4] rounded-full overflow-hidden">
+                    <div className="h-full bg-[#191c1f] rounded-full transition-all" style={{ width: `${item.pct}%` }} />
+                  </div>
                 </div>
               ))}
-              <div className="flex items-center justify-between pt-3 border-t-2 border-[#191c1f]">
-                <span className="text-base font-medium text-[#191c1f]">Total Development</span>
-                <span className="text-base font-medium text-[#191c1f]">R 1,580,900</span>
-              </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Ongoing + ROI */}
-          <div className="space-y-8">
-            <div className="bg-white rounded-2xl p-8 border border-[#e0e0e0]">
-              <h3 className="text-xl font-medium text-[#191c1f] mb-6">Ongoing Annual Costs</h3>
-              <div className="space-y-4">
-                {[
-                  { label: "Security Maintenance", amount: "R 216,000/yr" },
-                  { label: "DMARC Monitoring", amount: "R 78,000/yr" },
-                  { label: "Performance Optimization", amount: "R 144,000/yr" },
-                  { label: "Content Support", amount: "R 180,000/yr" },
-                  { label: "Backup Management", amount: "R 36,000/yr" },
-                  { label: "Support Tiers", amount: "R 120,000/yr" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between pb-3 border-b border-[#f4f4f4] last:border-0">
-                    <span className="text-sm text-[#505a63]">{item.label}</span>
-                    <span className="text-sm font-medium text-[#191c1f]">{item.amount}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-[#191c1f] rounded-2xl p-8">
-              <h3 className="text-lg font-medium text-white mb-6">Return on Investment Highlights</h3>
-              <div className="space-y-4">
-                {[
-                  { label: "Security Risk Reduction", value: "80% fewer vulnerabilities" },
-                  { label: "Performance", value: "4x faster page loads" },
-                  { label: "Development Efficiency", value: "60% faster feature delivery" },
-                  { label: "Operational Cost", value: "25% lower ongoing costs" },
-                  { label: "User Satisfaction", value: "90% positive feedback target" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <span className="text-sm text-[#8d969e]">{item.label}</span>
-                    <span className="text-sm font-medium text-[#00a87e]">{item.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-   LIVE DASHBOARD SECTION
-   ============================================================ */
-function DashboardSection({ visible }: { visible: boolean }) {
-  return (
-    <section id="dashboard" className="bg-white py-24 md:py-32">
-      <div className={`max-w-[1440px] mx-auto px-6 md:px-8 transition-all duration-800 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        <div className="max-w-3xl mx-auto text-center">
-          <Badge variant="outline" className="mb-4 text-xs font-medium tracking-wider uppercase px-4 py-1.5 border-[#c9c9cd] text-[#505a63]">
-            07 — Live Preview
-          </Badge>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium text-[#191c1f] tracking-tight leading-tight mb-6">
-            Experience the New IDC Application Portal
-          </h2>
-          <p className="text-lg text-[#505a63] leading-relaxed mb-12">
-            The new IDC application process is live and ready for review. This working prototype demonstrates the modern UX, streamlined application flow, and security-first architecture outlined in this presentation.
-          </p>
-
-          {/* Dashboard features */}
-          <div className="grid sm:grid-cols-3 gap-6 mb-12 text-left">
-            {[
-              { icon: <Code className="w-5 h-5" />, title: "Modern Tech Stack", desc: "Built with Next.js, TypeScript, and a headless CMS architecture as proposed in the modernization plan." },
-              { icon: <ShieldCheck className="w-5 h-5" />, title: "Security First", desc: "Enterprise-grade authentication, input validation, and secure data handling throughout the portal." },
-              { icon: <Smartphone className="w-5 h-5" />, title: "Mobile Optimized", desc: "Fully responsive design ensuring accessibility across all devices and connection speeds." },
-            ].map((item, i) => (
-              <div key={i} className="border border-[#e0e0e0] rounded-2xl p-6">
-                <div className="w-10 h-10 rounded-xl bg-[#f4f4f4] flex items-center justify-center mb-4 text-[#191c1f]">
-                  {item.icon}
+        {/* Ongoing costs */}
+        <Card className="py-0">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm">Ongoing Annual Costs</CardTitle>
+            <CardDescription>Total: R 774,000/year</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-2">
+              {[
+                { label: "Security Maintenance", amount: "R 216,000/yr" },
+                { label: "DMARC Monitoring", amount: "R 78,000/yr" },
+                { label: "Performance Optimization", amount: "R 144,000/yr" },
+                { label: "Content Support", amount: "R 180,000/yr" },
+                { label: "Backup Management", amount: "R 36,000/yr" },
+                { label: "Support Tiers", amount: "R 120,000/yr" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between py-2 border-b border-[#f4f4f4] last:border-0">
+                  <span className="text-xs text-[#505a63]">{item.label}</span>
+                  <span className="text-xs font-medium text-[#191c1f]">{item.amount}</span>
                 </div>
-                <h3 className="text-sm font-medium text-[#191c1f] mb-2">{item.title}</h3>
-                <p className="text-sm text-[#505a63] leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          {/* CTA */}
-          <div className="bg-[#191c1f] rounded-2xl p-10 md:p-14">
-            <h3 className="text-2xl md:text-3xl font-medium text-white mb-4">
-              Ready to Explore?
-            </h3>
-            <p className="text-[#8d969e] mb-8 max-w-lg mx-auto">
-              Click below to access the live IDC Application Portal prototype and experience the new platform firsthand.
-            </p>
-            <a
-              href="https://my-app-iota-ruby-95.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-pill btn-pill-white inline-flex"
-            >
+            <Separator className="my-4" />
+
+            <div className="space-y-2">
+              {[
+                { label: "Security Risk Reduction", value: "80% fewer vulns" },
+                { label: "Page Speed", value: "4x faster" },
+                { label: "Dev Efficiency", value: "60% faster" },
+                { label: "Op. Cost Savings", value: "25% reduction" },
+                { label: "User Satisfaction", value: "90% target" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <span className="text-xs text-[#8d969e]">{item.label}</span>
+                  <span className="text-xs font-medium text-[#00a87e]">{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Live dashboard CTA */}
+      <Card className="bg-[#191c1f] border-[#191c1f] py-0">
+        <CardContent className="p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-sm font-medium text-white mb-1">View the Live Application Portal</h3>
+              <p className="text-xs text-[#8d969e]">The working prototype demonstrates the modern UX and streamlined application flow.</p>
+            </div>
+            <a href={DASHBOARD_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00a87e] text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity shrink-0">
               Open Live Dashboard
-              <ExternalLink className="w-4 h-4" />
+              <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-   FOOTER COMPONENT
-   ============================================================ */
-function Footer() {
-  return (
-    <footer className="bg-[#191c1f] py-12">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <span className="text-white font-bold text-xs">IDC</span>
-              </div>
-              <span className="text-white font-medium text-sm">Industrial Development Corporation of South Africa</span>
-            </div>
-            <p className="text-[#505a63] text-sm">
-              Digital Transformation & Infrastructure Modernization
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-[#8d969e] text-sm">
-              Prepared by HexStrike AI Cybersecurity
-            </p>
-            <p className="text-[#505a63] text-xs mt-1">
-              Confidential — For IDC Board Members Only · April 2026
-            </p>
-          </div>
-        </div>
-      </div>
-    </footer>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
 /* ============================================================
    MAIN PAGE
    ============================================================ */
+const panelConfig: Record<PanelKey, { label: string }> = {
+  "overview": { label: "Dashboard Overview" },
+  "security": { label: "Security Assessment" },
+  "modernization": { label: "Technical Modernization" },
+  "project-plan": { label: "Project Plan" },
+  "ux-flow": { label: "New Portal UX" },
+  "investment": { label: "Investment & ROI" },
+};
+
 export default function IDCPage() {
   const getInitialLocked = useCallback(() => {
-    if (typeof window !== "undefined") {
-      return sessionStorage.getItem("idc-unlocked") === "true";
-    }
+    if (typeof window !== "undefined") return sessionStorage.getItem("idc-unlocked") === "true";
     return false;
   }, []);
 
   const [isUnlocked, setIsUnlocked] = useState(getInitialLocked);
-  const sectionIds = [
-    "overview", "executive-summary", "security", "modernization",
-    "project-plan", "ux-flow", "investment", "dashboard"
-  ];
-  const { activeSection, visibleSections } = useSectionObserver(sectionIds);
+  const [active, setActive] = useState<PanelKey>("overview");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   if (!isUnlocked) {
     return <PasswordGate onUnlock={() => setIsUnlocked(true)} />;
   }
 
+  const activeLabel = panelConfig[active].label;
+
   return (
-    <div className="min-h-screen">
-      <Navigation activeSection={activeSection} />
-      <main className="pt-16">
-        <HeroSection />
-        <ExecutiveSummarySection visible={visibleSections.has("executive-summary")} />
-        <SecuritySection visible={visibleSections.has("security")} />
-        <ModernizationSection visible={visibleSections.has("modernization")} />
-        <ProjectPlanSection visible={visibleSections.has("project-plan")} />
-        <UXFlowSection visible={visibleSections.has("ux-flow")} />
-        <InvestmentSection visible={visibleSections.has("investment")} />
-        <DashboardSection visible={visibleSections.has("dashboard")} />
-      </main>
-      <Footer />
+    <div className="min-h-screen bg-[#f8f8f8]">
+      <Sidebar active={active} setActive={setActive} collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+      <div className={`transition-all duration-300 ${sidebarCollapsed ? "lg:ml-[68px]" : "lg:ml-[260px]"}`}>
+        <Header activeLabel={activeLabel} onMenuClick={() => setSidebarCollapsed(false)} />
+        <main className="p-4 md:p-6 max-w-[1400px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              {active === "overview" && <OverviewPanel onNavigate={setActive} />}
+              {active === "security" && <SecurityPanel />}
+              {active === "modernization" && <ModernizationPanel />}
+              {active === "project-plan" && <ProjectPlanPanel />}
+              {active === "ux-flow" && <UXFlowPanel />}
+              {active === "investment" && <InvestmentPanel />}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
     </div>
   );
 }
