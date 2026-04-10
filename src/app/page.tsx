@@ -96,10 +96,9 @@ function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
             Unlock Dashboard
           </button>
         </form>
-        <p className="text-[#5a6270] text-[11px] mt-8">
-          Confidential — For IDC Board Members Only<br />
-          HexStrike AI Cybersecurity · April 2026
-        </p>
+<p className="text-[#5a6270] text-[11px] mt-8">
+  Confidential — For IDC Board Members Only
+</p>
       </motion.div>
     </div>
   );
