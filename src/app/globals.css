@@ -214,42 +214,46 @@ html {
   color: #ffffff;
 }
 
-/* Lock icon pulse animation */
-@keyframes lockPulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.08); opacity: 0.85; }
-}
-.lock-pulse {
-  animation: lockPulse 2.5s ease-in-out infinite;
-}
-
-/* Smooth unlock transition */
-@keyframes unlockFade {
-  from { opacity: 0; transform: scale(0.96) translateY(8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-.unlock-fade-in {
-  animation: unlockFade 0.5s ease-out forwards;
+/* 3D animated background effect */
+.bg-3d-effect {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+  opacity: 0.3;
+  z-index: -2;
+  filter: blur(60px);
+  transform: scale(1.2);
+  animation: pulse3d 10s ease-in-out infinite alternate;
 }
 
-/* Loading spinner */
-@keyframes spinLoader {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes pulse3d {
+  0% { opacity: 0.2; transform: scale(1.1) translate(-2%, -2%); }
+  50% { opacity: 0.3; transform: scale(1.2) translate(2%, 2%); }
+  100% { opacity: 0.2; transform: scale(1.1) translate(-2%, -2%); }
 }
 
-/* Nav item hover indent */
-.nav-item-hover {
-  transition: all 0.2s ease;
-}
-.nav-item-hover:hover {
-  padding-left: 1.25rem;
+/* Grain noise animation */
+.grain-noise {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.05;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  animation: grainScroll 8s linear infinite;
 }
 
-/* Button press effect */
-.btn-press {
-  transition: transform 0.1s ease;
+@keyframes grainScroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 100% 100%; }
 }
-.btn-press:active {
-  transform: scale(0.97);
+
+/* Pulse animation for unlock page elements */
+.animate-pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% % { opacity: 1; }
+  50% % { opacity: 0.5; }
 }

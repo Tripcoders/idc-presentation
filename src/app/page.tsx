@@ -52,20 +52,26 @@ function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
 
   return (
     <div className="min-h-screen bg-[#191c1f] flex items-center justify-center px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center max-w-md w-full"
-      >
+<motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="text-center max-w-md w-full relative"
+    >
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#1a1a2e] to-[#0a0a0a] opacity-80 animate-pulse"></div>
+        <div className="absolute inset-0 grain-noise opacity-30" id="grain-noise"></div>
+        <div className="absolute inset-0 bg-3d-effect"></div>
+      </div>
+      <div className="relative z-10">
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 mb-6">
-          <Shield strokeWidth={2.5} className="w-7 h-7 text-white" />
+          <Lock strokeWidth={2.5} className="w-7 h-7 text-white" />
         </div>
         <h1 className="text-2xl md:text-3xl font-medium text-white tracking-tight mb-2">
-          IDC Board Dashboard
+          IDC Eco System Presentation
         </h1>
         <p className="text-[#808890] text-sm mb-8">
-          Digital Transformation & Infrastructure Modernization
+          for authorized personel only
         </p>
         <form onSubmit={handleSubmit}>
           <motion.div animate={shake ? { x: [0, -10, 10, -10, 10, 0] } : {}} transition={{ duration: 0.4 }}>
