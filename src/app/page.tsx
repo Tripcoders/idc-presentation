@@ -1242,7 +1242,8 @@ export default function IDCPage() {
                 {active === "project-plan" && <ProjectPlanPanel />}
                 {active === "ux-flow" && <UXFlowPanel />}
                 {active === "investment" && <InvestmentPanel />}
-              </motion.div>
+</div>
+</motion.div>
             </AnimatePresence>
           )}
         </main>
